@@ -3,14 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.fixprotocol.orchestra</groupId>
+	<groupId>io.fixprotocol.orchestra.qf</groupId>
 	<artifactId>parent</artifactId>
-	<version>1.6.9-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>Parent project for FIX Orchestra. Build Java 8 by default, multi-release jar on demand.</description>
+	<description>Parent project for FIX Orchestra / QuickFIX integration</description>
 	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
-	<inceptionYear>2016</inceptionYear>
+	<inceptionYear>2020</inceptionYear>
 	<prerequisites>
 		<!-- supports toolchain configuration -->
 		<maven>3.3.1</maven>
@@ -52,20 +52,9 @@
 		</repository>
 	</distributionManagement>
 	<modules>
-		<module>interfaces</module>
 		<module>session-quickfix</module>
-		<module>repository2010</module>
-		<module>repository</module>
-		<module>dsl-antlr</module>
-		<module>message-model</module>
 		<module>repository-quickfix</module>
 		<module>model-quickfix</module>
-		<module>docgen</module>
-		<module>testgen</module>
-		<module>state-machine</module>
-		<module>repository-util</module>
-		<module>orchestra-common</module>
-		<module>interfaces-util</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -75,6 +64,7 @@
 		<cucumber.version>1.2.6</cucumber.version>
 		<junit.version>5.6.1</junit.version>
 		<log4j.version>2.13.3</log4j.version>
+		<orchestra.version>1.6.8</orchestra.version>
 		<quickfixj.version>2.2.0</quickfixj.version>
 		<saxon.version>10.1</saxon.version>
 		<slf4j.version>1.7.22</slf4j.version>
