@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 FIX Protocol Ltd
+ * Copyright 2017-2021 FIX Protocol Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
@@ -146,26 +146,25 @@ public class DataDictionaryGenerator {
     }
 
     String version = repository.getVersion();
-    // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
-    final String[] parts = version.split("_");
-    if (parts.length > 0) {
-      version = parts[0];
-    }
     int major = 0;
     int minor = 0;
     final String regex = "(FIX\\.)(?<major>\\d+)(\\.)(?<minor>\\d+)(.*)";
     final Pattern pattern = Pattern.compile(regex);
     final Matcher matcher = pattern.matcher(version);
     if (matcher.find()) {
+      String extensionPack = extractExtensionPack(version);
+      String servicePack = extractServicePack(version);
       major = Integer.parseInt(matcher.group("major"));
       minor = Integer.parseInt(matcher.group("minor"));
 
-      final String versionPath = version.replaceAll("[\\.]", "");
+      String fileName = splitOffVersion(version);
+      final String versionPath = fileName.replaceAll("[\\.]", "");
       final File file = getSpecFilePath(outputDir, versionPath, ".xml");
       outputDir.mkdirs();
       try (FileWriter writer = new FileWriter(file)) {
         writeElement(writer, "fix", 0, false, new KeyValue<>("major", major),
-            new KeyValue<>("minor", minor));
+            new KeyValue<>("minor", minor), new KeyValue<>("servicepack", servicePack),
+            new KeyValue<>("extensionpack", extensionPack));
         writeElement(writer, "header", 1, true);
         writeElement(writer, "trailer", 1, true);
         writeElement(writer, "messages", 1, false);
@@ -196,6 +195,40 @@ public class DataDictionaryGenerator {
     } else {
       System.err.format("Failed to parse FIX major and minor version in %s%n", version);
     }
+  }
+
+  String splitOffVersion(String version) {
+    // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
+    String[] parts = version.split("_");
+    if (parts.length > 0) {
+      version = parts[0];
+    }
+    return version;
+  }
+
+  String extractExtensionPack(String version) {
+    // Split off EP portion of version in the form "FIX.5.0SP2_EP216"
+    String extensionPack = "0";
+    String[] parts = version.split("_EP");
+    if (parts.length > 1) {
+      extensionPack = parts[1];
+    }
+    return extensionPack;
+  }
+
+  String extractServicePack(String version) {
+    // Split off SP portion of version in the form "FIX.5.0SP2"
+    String servicePack = "0";
+    String[] parts = version.split("SP");
+    if (parts.length > 1) {
+      servicePack = parts[1];
+    }
+    // strip trailing EP as in "SP2_EP123" if it exists
+    parts = servicePack.split("_");
+    if (parts.length > 1) {
+      servicePack = parts[0];
+    }
+    return servicePack;
   }
 
   private File getSpecFilePath(File outputDir, String versionPath, String extension) {
