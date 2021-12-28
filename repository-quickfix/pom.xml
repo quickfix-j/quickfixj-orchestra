@@ -16,11 +16,6 @@
 			<artifactId>repository</artifactId>
 			<version>${orchestra.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.quickfixj</groupId>
-			<artifactId>quickfixj-core</artifactId>
-			<version>${quickfixj.version}</version>
-		</dependency>
 		<!-- not required for Java 8 -->
 		<dependency>
 			<groupId>javax.xml.bind</groupId>

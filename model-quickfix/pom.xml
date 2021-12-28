@@ -10,6 +10,12 @@
 	<artifactId>model-quickfix</artifactId>
 	<description>Message validation</description>
 	<name>${project.groupId}:${project.artifactId}</name>
+	
+	<properties>
+        <orchestra.file>OrchestraEP255.xml</orchestra.file>
+    </properties>
+	
+	
 	<dependencies>
 		<dependency>
 			<groupId>io.fixprotocol.orchestra</groupId>
@@ -26,6 +32,10 @@
 			<artifactId>quickfixj-core</artifactId>
 			<version>${quickfixj.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>io.fixprotocol.orchestrations</groupId>
+            <artifactId>fix-standard</artifactId>
+        </dependency>		
 		<!-- not required for Java 8 -->
    		<dependency>
             <groupId>javax.xml.bind</groupId>
@@ -71,6 +81,54 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-dependencies</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>io.fixprotocol.orchestrations</groupId>
+                                    <artifactId>fix-standard</artifactId>
+                                    <includes>**/Fix*.xml,**/Orchestra*.xml</includes>
+                                    <outputDirectory>${project.build.directory}/dependency/repository</outputDirectory>
+                                </artifactItem>            
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>cleanOrchestraRepo</id>
+                    <phase>generate-resources</phase>
+                    <goals>
+                      <goal>transform</goal>
+                    </goals>
+                    <configuration>
+                      <transformationSets>
+                        <transformationSet>
+                          <dir>${project.build.directory}/dependency/repository</dir>
+                          <outputDir>${project.build.directory}/generated-resources/repository</outputDir>
+                          <includes>
+                            <include>${orchestra.file}</include>
+                          </includes>
+                          <stylesheet>${project.basedir}/src/main/xsl/extractForQuickFIXJ.xsl</stylesheet>
+                         </transformationSet>
+                       </transformationSets>
+                    </configuration>
+                  </execution>
+                </executions>
+            </plugin>            		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-toolchains-plugin</artifactId>
@@ -99,7 +157,7 @@
 				<configuration>
 					<mainClass>io.fixprotocol.orchestra.quickfix.CodeGeneratorJ</mainClass>
 					<arguments>
-						<argument>${project.build.testResources[0].directory}/mit_2016.xml</argument>
+						<argument>${project.build.directory}/generated-resources/repository/OrchestraEP255.xml</argument>
 						<argument>${project.build.directory}/generated-test-sources/java/</argument>
 					</arguments>
 				</configuration>

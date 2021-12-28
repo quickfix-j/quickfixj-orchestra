@@ -16,7 +16,6 @@ package io.fixprotocol.orchestra.quickfix;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
 import io.fixprotocol._2020.orchestra.repository.CodeSetType;
 import io.fixprotocol._2020.orchestra.repository.CodeType;
 import io.fixprotocol._2020.orchestra.repository.ComponentRefType;
@@ -599,6 +600,9 @@ public class CodeGeneratorJ {
       case "UtcDateOnlyField":
         writer.write(String.format("%n%spublic %s(LocalDate data) {%n%ssuper(%d, data);%n%s}%n",
             indent(1), className, indent(2), fieldId, indent(1)));
+        // added for compatibility with existing QFJ tests
+        writer.write(String.format("%n%spublic %s(String data) {%n%ssuper(%d, data);%n%s}%n",
+                indent(1), className, indent(2), fieldId, indent(1)));
         break;
       case "UtcTimeOnlyField":
         writer.write(String.format("%n%spublic %s(LocalTime data) {%n%ssuper(%d, data);%n%s}%n",
@@ -879,22 +883,23 @@ public class CodeGeneratorJ {
   private Writer writeValues(Writer writer, CodeSetType codeSet) throws IOException {
     final String type = codeSet.getType();
     for (final CodeType code : codeSet.getCode()) {
+      String name = CodeGeneratorTransformUtil.precedeCapsWithUnderscore(code.getName()); 	
       switch (type) {
         case "Boolean":
           writer.write(String.format("%n%spublic static final boolean %s = %s;%n", indent(1),
-              code.getName(), code.getValue().equals("Y")));
+            name, code.getValue().equals("Y")));
           break;
         case "char":
           writer.write(String.format("%n%spublic static final char %s = \'%s\';%n", indent(1),
-              code.getName(), code.getValue()));
+        	name, code.getValue()));
           break;
         case "int":
           writer.write(String.format("%n%spublic static final int %s = %s;%n", indent(1),
-              code.getName(), code.getValue()));
+        	name, code.getValue()));
           break;
         default:
           writer.write(String.format("%n%spublic static final String %s = \"%s\";%n", indent(1),
-              code.getName(), code.getValue()));
+        	name, code.getValue()));
       }
 
     }

@@ -78,7 +78,7 @@ public class ValidatorTest {
   @Test
   public void badCode() {
     TradingSessionStatus message = new TradingSessionStatus();
-    message.set(new TradingSessionID(TradingSessionID.Day));
+    message.set(new TradingSessionID(TradingSessionID.DAY));
     message.set(new TradSesStatus(82));
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     try {
@@ -93,8 +93,8 @@ public class ValidatorTest {
   @Test
   public void validMessage() throws TestException {
     TradingSessionStatus message = new TradingSessionStatus();
-    message.set(new TradingSessionID(TradingSessionID.Day));
-    message.set(new TradSesStatus(TradSesStatus.Open));
+    message.set(new TradingSessionID(TradingSessionID.DAY));
+    message.set(new TradSesStatus(TradSesStatus.OPEN));
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
     validator.validate(message, messageType);
   }
@@ -113,8 +113,8 @@ public class ValidatorTest {
   @Test
   public void ruleViolation() throws TestException {
     TradingSessionStatus message = new TradingSessionStatus();
-    message.set(new TradingSessionID(TradingSessionID.Day));
-    message.set(new TradSesStatus(TradSesStatus.RequestRejected));
+    message.set(new TradingSessionID(TradingSessionID.DAY));
+    message.set(new TradSesStatus(TradSesStatus.REQUEST_REJECTED));
     MessageType messageType = repositoryAdapter.getMessage("TradingSessionStatus", "base");
 
     assertThrows(TestException.class, () -> {validator.validate(message, messageType);});

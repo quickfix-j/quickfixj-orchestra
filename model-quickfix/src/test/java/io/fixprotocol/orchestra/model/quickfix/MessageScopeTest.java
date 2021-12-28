@@ -120,11 +120,11 @@ public class MessageScopeTest {
   @Test
   public void testResolveGroupPredicate() {
     MarketDataIncrementalRefresh.NoMDEntries group = new MarketDataIncrementalRefresh.NoMDEntries();
-    group.set(new MDEntryType(MDEntryType.Bid));
+    group.set(new MDEntryType(MDEntryType.BID));
     group.set(new MDEntryPx(12.32));
     group.set(new MDEntrySize(100));
     md.addGroup(group);
-    group.set(new MDEntryType(MDEntryType.Bid));
+    group.set(new MDEntryType(MDEntryType.BID));
     group.set(new MDEntryPx(12.31));
     group.set(new MDEntrySize(200));
     md.addGroup(group);
