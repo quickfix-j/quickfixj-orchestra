@@ -784,9 +784,13 @@ public class CodeGeneratorJ {
           System.err.format("Group missing from repository; id=%d%n", id);
         }
       } else if (member instanceof ComponentRefType) {
-        final ComponentType component =
+        final ComponentType componentType =
             components.get(((ComponentRefType) member).getId().intValue());
-        writeComponentAccessors(writer, component.getName(), componentPackage);
+        writeComponentAccessors(writer, componentType.getName(), componentPackage);
+        final List<Object> componentMembers = componentType.getComponentRefOrGroupRefOrFieldRef();
+        writeMemberAccessors(writer, 
+    		componentMembers.stream().filter(componentMember -> componentMember instanceof FieldRefType).collect(Collectors.toList()), 
+    		packageName, componentPackage);
       }
     }
   }
