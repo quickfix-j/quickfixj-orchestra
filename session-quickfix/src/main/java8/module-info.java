@@ -1,6 +1,6 @@
 module orchesta.interfaces.qf {
-  requires transitive orchesta.repository.qf ;
+  requires transitive orchesta.repository ;
   requires quickfixj.core;
   
-  exports io.fixprotocol.orchestra.model.quickfix;
+  exports io.fixprotocol.orchestra.session.quickfix;
 }
