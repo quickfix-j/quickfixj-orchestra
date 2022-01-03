@@ -787,10 +787,7 @@ public class CodeGeneratorJ {
       } else if (member instanceof ComponentRefType) {
         final ComponentType componentType =
             components.get(((ComponentRefType) member).getId().intValue());
-        final List<Object> componentMembers = componentType.getComponentRefOrGroupRefOrFieldRef();
-        writeMemberAccessors(writer, 
-    		componentMembers.stream().filter(componentMember -> componentMember instanceof FieldRefType).collect(Collectors.toList()), 
-    		packageName, componentPackage);
+        writeComponentAccessors(writer, componentType.getName(), componentPackage);
       }
     }
   }
