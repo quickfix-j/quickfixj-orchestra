@@ -129,25 +129,6 @@
 						<source>${base.java.version}</source>
 						<target>${base.java.version}</target>
 					</configuration>
-					<executions>
-						<!-- for Java 11+ -->
-						<execution>
-							<id>java11</id>
-							<goals>
-								<goal>compile</goal>
-							</goals>
-							<configuration>
-								<release>11</release>
-								<jdkToolchain>
-									<version>[11,)</version>
-								</jdkToolchain>
-								<compileSourceRoots>
-									<compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
-								</compileSourceRoots>
-								<multiReleaseOutput>true</multiReleaseOutput>
-							</configuration>
-						</execution>
-					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
