@@ -8,19 +8,29 @@ This project contains integrations between FIX Orchestra and QuickFIX.
 
 * QuickFIX is a popular, open-source FIX engine. It has been implemented or ported to several programming languages, including C++, Java, .NET, and golang.
 
+The code is based on prior work by the FTC, see [fix-orchestra-quickfix](https://github.com/FIXTradingCommunity/fix-orchestra-quickfix). Accordingly the Apache 2.0 license is applicable.
+
+It was agreed that the code be moved to this repository for the following reasons :
+* to establish curation of the code base and tools for easier customisation of QuickFIX/J for specific Rules of Engagement
+* the code generation is coupled to the QuickFIX/J implementation therefore its "reason to change" is when the QuickFIX/J implementation changes
+
 ## Modules
 
-Some models in this project are intended to be operational while others are proofs of concept.
+### quickfixj-orchestra
 
-### repository-quickfix
+The parent module is implemented to serve as a parent for potential future QuickFIX/J work based on FIX Orchestra. 
+Two modules from the original FIX Trading Community [fix-orchestra-quickfix](https://github.com/FIXTradingCommunity/fix-orchestra-quickfix) project are not included in this build
+as they would introduce a cyclic dependency with the QuickFIX/J project. These modules could be implemented in a 
+separate repository in the future but use `quickfixj-orchestra` as a parent pom. 
 
-This module generates a QuickFIX data dictionary from an Orchestra file. The format can be consumed by the C++, Java and .NET versions. Additionally, the module generates message classes for QuickFIX/J directly from an Orchestra file. Although the QuickFIX data dictionary format is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. 
+### quickfixj-from-fix-orchestra-repository
 
-### model-quickfix
-This module generates code that is conformant to the QuickFIX/J API for validating and populating messages. It is dependent on `repository-quickfix`.
+This module provides tools to generate QuickFIX artefacts from an Orchestra repository file. 
 
-### session-quickfix
-A demonstration of session configuration for QuickFIX open-source FIX engine. It consumes an XML file in the `interfaces` schema.
+This includes :
+* QuickFIX Dictionary generation that can be consumed by the C++, Java and .NET versions. Although the QuickFIX data dictionary is not as richly featured as Orchestra, it is hoped that this utility will help with Orchestra adoption. 
+* Generation of Field and Message classes for QuickFIX/J directly from an Orchestra file.
+* Mvn plugins to facilitate the above
 
 ## References
 

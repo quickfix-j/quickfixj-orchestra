@@ -3,21 +3,21 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>io.fixprotocol.orchestra.qf</groupId>
+	<groupId>org.quickfixj.orchestra</groupId>
 	<artifactId>parent</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>${project.groupId}:${project.artifactId}</name>
 	<description>Parent project for FIX Orchestra / QuickFIX integration</description>
-	<url>https://github.com/FIXTradingCommunity/fix-orchestra/wiki</url>
+	<url>https://github.com/quickfix-j/quickfixj-orchestra</url>
 	<inceptionYear>2020</inceptionYear>
 	<prerequisites>
 		<!-- supports toolchain configuration -->
-		<maven>3.3.1</maven>
+		<maven>3.5.0</maven>
 	</prerequisites>
 	<organization>
-		<name>FIX Trading Community</name>
-		<url>http://https://www.fixtrading.org/</url>
+		<name>QuickFIX/J Organisation</name>
+		<url>http://www.quickfixj.org</url>
 	</organization>
 	<licenses>
 		<license>
@@ -33,13 +33,21 @@
 			<organizationUrl>https://www.fixtrading.org/</organizationUrl>
 		</developer>
 	</developers>
+	<contributors>
+		<contributor>
+			<name>David Gibbs</name>
+			<email>david.gibbs@nadex.com</email>
+			<organization>Nadex</organization>
+			<organizationUrl>https://www.nadex.com/</organizationUrl>
+		</contributor>
+	</contributors>
 	<scm>
-		<developerConnection>scm:git:ssh://git@github.com/FIXTradingCommunity/fix-orchestra.git</developerConnection>
-		<url>https://github.com/FIXTradingCommunity/fix-orchestra</url>
+		<developerConnection>scm:git:ssh://git@github.com:quickfix-j/quickfixj-orchestra.git</developerConnection>
+		<url>https://github.com/quickfix-j/quickfixj-orchestra</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub</system>
-		<url>http://github.com/FIXTradingCommunity/fix-orchestra/issues</url>
+		<url>https://github.com/quickfix-j/quickfixj-orchestra/issues</url>
 	</issueManagement>
 	<distributionManagement>
 		<snapshotRepository>
@@ -52,48 +60,111 @@
 		</repository>
 	</distributionManagement>
 	<modules>
-		<module>session-quickfix</module>
-		<module>repository-quickfix</module>
-		<module>model-quickfix</module>
+		<module>quickfixj-from-fix-orchestra-repository</module>
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<antlr.version>4.8-1</antlr.version>
 		<base.java.version>1.8</base.java.version>
-		<commons-cli.version>1.4</commons-cli.version>
 		<cucumber.version>1.2.6</cucumber.version>
-		<junit.version>5.6.1</junit.version>
-		<log4j.version>2.17.1</log4j.version>
-		<orchestra.version>1.6.8</orchestra.version>
-		<quickfixj.version>2.2.0</quickfixj.version>
-		<saxon.version>10.1</saxon.version>
+		<junit.jupiter.version>5.6.1</junit.jupiter.version>
+		<junit.version>4.13.2</junit.version>
+		<orchestra.repository.version>1.6.8</orchestra.repository.version>
+		<fix.orchestra.version>1.5.4</fix.orchestra.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<stringtemplate.version>4.3.1</stringtemplate.version>
 		<jackson.version>2.11.2</jackson.version>
+		<jaxb.version>2.3.3</jaxb.version>
+		<commons.io.version>2.11.0</commons.io.version>
+		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
+		<picocli-version>4.6.3</picocli-version>
+		<maven.version>3.5.0</maven.version>
+		<maven-javadoc-plugin-version>3.4.1</maven-javadoc-plugin-version>
+		<maven-gpg-plugin-version>3.0.1</maven-gpg-plugin-version>
+		<maven-source-plugin-version>3.2.1</maven-source-plugin-version>
+		<nexus-staging-maven-plugin-version>1.6.13</nexus-staging-maven-plugin-version>
+		<maven-surefire-plugin-version>2.22.2</maven-surefire-plugin-version>
+		<maven-resources-plugin-version>3.3.0</maven-resources-plugin-version>
+		<maven-jar-plugin-version>3.3.0</maven-jar-plugin-version>
+		<maven-compiler-plugin-version>3.10.1</maven-compiler-plugin-version>
+		<maven-plugin-api.version>3.8.4</maven-plugin-api.version>
+		<maven-plugin-annotations.version>3.6.0</maven-plugin-annotations.version>
+		<maven-plugin-testing-harness.version>3.3.0</maven-plugin-testing-harness.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>${junit.version}</version>
+				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-params</artifactId>
-				<version>${junit.version}</version>
+				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.junit.vintage</groupId>
+				<artifactId>junit-vintage-engine</artifactId>
+				<version>${junit.jupiter.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>io.fixprotocol.orchestra</groupId>
+				<artifactId>repository</artifactId>
+				<version>${orchestra.repository.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons.io.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>info.picocli</groupId>
+				<artifactId>picocli</artifactId>
+				<version>${picocli-version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.bind</groupId>
+				<artifactId>jakarta.xml.bind-api</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-plugin-api</artifactId>
+				<version>${maven-plugin-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-core</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-artifact</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven</groupId>
+				<artifactId>maven-compat</artifactId>
+				<version>${maven.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugin-tools</groupId>
+				<artifactId>maven-plugin-annotations</artifactId>
+				<version>${maven-plugin-annotations.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.maven.plugin-testing</groupId>
+				<artifactId>maven-plugin-testing-harness</artifactId>
+				<version>${maven-plugin-testing-harness.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -124,7 +195,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
+					<version>${maven-compiler-plugin-version}</version>
 					<configuration>
 						<source>${base.java.version}</source>
 						<target>${base.java.version}</target>
@@ -133,7 +204,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version>
+					<version>${maven-jar-plugin-version}</version>
 					<configuration>
 						<archive>
 							<manifest>
@@ -149,12 +220,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${maven-resources-plugin-version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M4</version>
+					<version>${maven-surefire-plugin-version}</version>
+					<!-- version>3.0.0-M4</version -->
+				</plugin>
+				<plugin>
+					<artifactId>maven-plugin-plugin</artifactId>
+					<version>3.6.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -167,7 +243,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
+				<version>${nexus-staging-maven-plugin-version}</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>
@@ -185,7 +261,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>${maven-source-plugin-version}</version>
 						<executions>
 							<execution>
 								<id>attach-sources</id>
@@ -198,7 +274,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
+						<version>${maven-gpg-plugin-version}</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -213,7 +289,7 @@
 						<!-- use jdk 11.0.5 or later to avoid a bug in javadoc -->
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>3.0.1</version>
+						<version>${maven-javadoc-plugin-version}</version>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
