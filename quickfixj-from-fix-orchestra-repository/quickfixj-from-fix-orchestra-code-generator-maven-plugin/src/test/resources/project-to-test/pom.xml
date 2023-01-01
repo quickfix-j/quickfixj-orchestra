@@ -17,7 +17,7 @@
 		<plugins>
 			<plugin>
 				<groupId>org.quickfixj.orchestra</groupId>
-				<artifactId>quickfixj-from-fix-orchestra-codegenerator-maven-plugin</artifactId>
+				<artifactId>quickfixj-from-fix-orchestra-code-generator-maven-plugin</artifactId>
 				<configuration>
 					<orchestration>resources/trade-latest.xml</orchestration>
 					<outputDirectory>target/generated-sources</outputDirectory>
