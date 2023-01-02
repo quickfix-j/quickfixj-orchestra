@@ -1,4 +1,4 @@
-# fix-orchestra-quickfix
+# quickfixj-orchestra
 
 ![](FIXorchestraLogo.png)
 
