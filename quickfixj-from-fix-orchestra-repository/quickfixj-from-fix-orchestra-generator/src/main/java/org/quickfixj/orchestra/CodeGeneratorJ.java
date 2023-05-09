@@ -855,9 +855,6 @@ public class CodeGeneratorJ {
 		case "UtcDateOnlyField":
 			writer.write(String.format("%n%spublic %s(LocalDate data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1),
 					className, CodeGeneratorUtil.indent(2), fieldId, CodeGeneratorUtil.indent(1)));
-			// added for compatibility with existing QFJ tests
-			writer.write(String.format("%n%spublic %s(String data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1), className,
-					CodeGeneratorUtil.indent(2), fieldId, CodeGeneratorUtil.indent(1)));
 			break;
 		case "UtcTimeOnlyField":
 			writer.write(String.format("%n%spublic %s(LocalTime data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1),
