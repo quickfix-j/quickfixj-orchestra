@@ -674,43 +674,43 @@ public class CodeGeneratorJ {
 	private static String getFieldBaseClass(String type, String decimalTypeString) {
 		String baseType;
 		switch (type) {
-		case "char":
-			baseType = "CharField";
-			break;
-		case "Price":
-		case "Amt":
-		case "Qty":
-		case "float":
-		case "PriceOffset":
-			baseType = decimalTypeString;
-			break;
-		case "int":
-		case "NumInGroup":
-		case "SeqNum":
-		case "Length":
-		case "TagNum":
-		case "DayOfMonth":
-			baseType = "IntField";
-			break;
-		case "UTCTimestamp":
-			baseType = "UtcTimeStampField";
-			break;
-		case "UTCTimeOnly":
-		case "LocalMktTime":
-			baseType = "UtcTimeOnlyField";
-			break;
-		case "UTCDateOnly":
-		case "LocalMktDate":
-			baseType = "UtcDateOnlyField";
-			break;
-		case "Boolean":
-			baseType = "BooleanField";
-			break;
-		case "Percentage":
-			baseType = DOUBLE_FIELD;
-			break;
-		default:
-			baseType = "StringField";
+			case "char":
+				baseType = "CharField";
+				break;
+			case "Price":
+			case "Amt":
+			case "Qty":
+			case "float":
+			case "PriceOffset":
+				baseType = decimalTypeString;
+				break;
+			case "int":
+			case "NumInGroup":
+			case "SeqNum":
+			case "Length":
+			case "TagNum":
+			case "DayOfMonth":
+				baseType = "IntField";
+				break;
+			case "UTCTimestamp":
+				baseType = "UtcTimeStampField";
+				break;
+			case "UTCTimeOnly":
+				baseType = "UtcTimeOnlyField";
+				break;
+			case "UTCDateOnly":
+				baseType = "UtcDateOnlyField";
+				break;
+			case "Boolean":
+				baseType = "BooleanField";
+				break;
+			case "Percentage":
+				baseType = DOUBLE_FIELD;
+				break;
+			case "LocalMktDate":
+			case "LocalMktTime":
+			default:
+				baseType = "StringField";
 		}
 		return baseType;
 	}
