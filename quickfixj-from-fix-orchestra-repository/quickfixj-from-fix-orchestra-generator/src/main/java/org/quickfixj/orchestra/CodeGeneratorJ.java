@@ -78,8 +78,8 @@ public class CodeGeneratorJ {
 	public static final int GRP_MSG_TYPE_GRP = 2098;
 	
 	private static final int FAIL_STATUS = 1;
-	private static final String DOUBLE_FIELD = "DoubleField";
-	private static final String DECIMAL_FIELD = "DecimalField";
+	public static final String DOUBLE_FIELD = "DoubleField";
+	public static final String DECIMAL_FIELD = "DecimalField";
 
 	private static final String FIXT_1_1 = "FIXT.1.1";
 
@@ -91,7 +91,9 @@ public class CodeGeneratorJ {
 	private static final String FIELD_PACKAGE  = "quickfix.field";
 
 	private static final long SERIALIZATION_VERSION = 552892318L;
-	
+	public static final String UTC_DATE_ONLY = "UTCDateOnly";
+	public static final String UTC_DATE_ONLY_FIELD = "UtcDateOnlyField";
+
 	private boolean isGenerateBigDecimal = true;
 	private boolean isGenerateOnlySession = false;
 	private boolean isExcludeSession = false;
@@ -430,6 +432,7 @@ public class CodeGeneratorJ {
 									  String decimalTypeString) throws IOException {
 		final String name = toTitleCase(fieldType.getName());
 		final File file = getClassFilePath(outputDir, packageName, name);
+		System.out.printf("Generating Field file : %s.%n", file.getName());
 		try (FileWriter writer = new FileWriter(file)) {
 			writeFileHeader(writer);
 			writePackage(writer, packageName);
@@ -459,6 +462,9 @@ public class CodeGeneratorJ {
 			writeFieldNoArgConstructor(writer, name, fieldId);
 			writeFieldArgConstructor(writer, name, fieldId, baseClassname, isGenerateBigDecimal);
 			writeEndClassDeclaration(writer);
+		} catch (Exception e) {
+			System.err.printf("Exception generating file : %s", file.getName());
+			e.printStackTrace();
 		}
 	}
 
@@ -519,6 +525,7 @@ public class CodeGeneratorJ {
 			messageClassname = messageClassname + toTitleCase(scenario);
 		}
 		final File file = getClassFilePath(outputDir, messagePackage, messageClassname);
+		System.out.printf("Generating Message file : %s.%n", file.getName());
 		try (FileWriter writer = new FileWriter(file)) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
@@ -540,6 +547,9 @@ public class CodeGeneratorJ {
 			writeMemberAccessors(writer, members, messagePackage, componentPackage, groups, components, fields);
 
 			writeEndClassDeclaration(writer);
+		} catch (Exception e) {
+			System.err.printf("Exception generating file : %s", file.getName());
+			e.printStackTrace();
 		}
 	}
 
@@ -671,7 +681,7 @@ public class CodeGeneratorJ {
 		return new File(outputDir, sb.toString());
 	}
 
-	private static String getFieldBaseClass(String type, String decimalTypeString) {
+	public static String getFieldBaseClass(String type, String decimalTypeString) {
 		String baseType;
 		switch (type) {
 			case "char":
@@ -698,8 +708,8 @@ public class CodeGeneratorJ {
 			case "UTCTimeOnly":
 				baseType = "UtcTimeOnlyField";
 				break;
-			case "UTCDateOnly":
-				baseType = "UtcDateOnlyField";
+			case UTC_DATE_ONLY:
+				baseType = UTC_DATE_ONLY_FIELD;
 				break;
 			case "Boolean":
 				baseType = "BooleanField";
@@ -855,9 +865,6 @@ public class CodeGeneratorJ {
 		case "UtcDateOnlyField":
 			writer.write(String.format("%n%spublic %s(LocalDate data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1),
 					className, CodeGeneratorUtil.indent(2), fieldId, CodeGeneratorUtil.indent(1)));
-			// added for compatibility with existing QFJ tests
-			writer.write(String.format("%n%spublic %s(String data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1), className,
-					CodeGeneratorUtil.indent(2), fieldId, CodeGeneratorUtil.indent(1)));
 			break;
 		case "UtcTimeOnlyField":
 			writer.write(String.format("%n%spublic %s(LocalTime data) {%n%ssuper(%d, data);%n%s}%n", CodeGeneratorUtil.indent(1),
