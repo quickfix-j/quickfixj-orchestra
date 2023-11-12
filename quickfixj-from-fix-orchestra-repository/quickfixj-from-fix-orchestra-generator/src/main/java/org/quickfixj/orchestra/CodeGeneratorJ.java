@@ -463,7 +463,7 @@ public class CodeGeneratorJ {
 			writeFieldArgConstructor(writer, name, fieldId, baseClassname, isGenerateBigDecimal);
 			writeEndClassDeclaration(writer);
 		} catch (Exception e) {
-			System.err.printf("Exception generating file : %s", file.getName());
+			System.err.printf("Exception generating file : %s.%n", file.getName());
 			e.printStackTrace();
 		}
 	}
@@ -548,7 +548,7 @@ public class CodeGeneratorJ {
 
 			writeEndClassDeclaration(writer);
 		} catch (Exception e) {
-			System.err.printf("Exception generating file : %s", file.getName());
+			System.err.printf("Exception generating file : %s.%n", file.getName());
 			e.printStackTrace();
 		}
 	}
