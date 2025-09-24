@@ -568,6 +568,7 @@ public class CodeGeneratorJ {
 			writeSerializationVersion(writer, SERIALIZATION_VERSION);
 			writeMessageNoArgBaseConstructor(writer, "Message");
 			writeProtectedMessageBaseConstructor(writer, "Message", getBeginString(version));
+            writeHeaderMethods(writer);
 			writeMessageDerivedHeaderClass(writer);
 
 			writeEndClassDeclaration(writer);
@@ -1095,6 +1096,27 @@ public class CodeGeneratorJ {
 
 		return writer;
 	}
+
+    private static void writeHeaderMethods(FileWriter writer) throws IOException {
+        writeHeaderFactoryMethod(writer);
+        writeHeaderGetter(writer);
+    }
+
+    private static void writeHeaderFactoryMethod(FileWriter writer) throws IOException {
+        writer.write(String.format("%n"));
+        writer.write(String.format("%s@Override%n", CodeGeneratorUtil.indent(1)));
+        writer.write(String.format("%sprotected Header newHeader() {%n", CodeGeneratorUtil.indent(1)));
+        writer.write(String.format("%sreturn new Header(this);%n", CodeGeneratorUtil.indent(2)));
+        writer.write(String.format("%s}%n", CodeGeneratorUtil.indent(1)));
+    }
+
+    private static void writeHeaderGetter(FileWriter writer) throws IOException {
+        writer.write(String.format("%n"));
+        writer.write(String.format("%s@Override%n", CodeGeneratorUtil.indent(1)));
+        writer.write(String.format("%spublic Header getHeader() {%n", CodeGeneratorUtil.indent(1)));
+        writer.write(String.format("%sreturn (Message.Header)header;%n", CodeGeneratorUtil.indent(2)));
+        writer.write(String.format("%s}%n", CodeGeneratorUtil.indent(1)));
+    }
 
 	private static Writer writeMessageDerivedHeaderClass(Writer writer) throws IOException {
 		writeStaticClassDeclaration(writer, "Header", "quickfix.Message.Header");
