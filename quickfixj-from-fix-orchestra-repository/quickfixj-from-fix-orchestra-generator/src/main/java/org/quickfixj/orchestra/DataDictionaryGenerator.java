@@ -32,10 +32,14 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.util.JAXBSource;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -66,6 +70,24 @@ import io.fixprotocol._2020.orchestra.repository.Repository;
  *
  */
 public class DataDictionaryGenerator {
+
+  private static class UnmarshalResult {
+    private final Repository repository;
+    private final Node repositoryNode;
+
+    public UnmarshalResult(Repository repository, Node repositoryNode) {
+      this.repository = repository;
+      this.repositoryNode = repositoryNode;
+    }
+
+    public Repository getRepository() {
+      return repository;
+    }
+
+    public Node getRepositoryNode() {
+      return repositoryNode;
+    }
+  }
 
   private static class KeyValue<T> {
     final String key;
@@ -112,19 +134,30 @@ public class DataDictionaryGenerator {
   private final Map<Integer, ComponentType> components = new HashMap<>();
   private final Map<Integer, GroupType> groups = new HashMap<>();
   private final Map<Integer, FieldType> fields = new HashMap<>();
-  private Document xmlDocument;
   private static final String FIX_LATEST = "FIX.Latest";
 
   public void generate(InputStream inputFile, File outputDir) throws JAXBException, IOException,
       ParserConfigurationException, SAXException, XPathExpressionException {
-    final Repository repository = unmarshal(inputFile);
-    generate(repository, outputDir);
+    final UnmarshalResult result = unmarshal(inputFile);
+    generate(result.getRepository(), outputDir, result.getRepositoryNode());
   }
 
   public void generate(Repository repository, File outputDir)
       throws IOException, XPathExpressionException {
+    try {
+      JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
+      DOMResult domResult = new DOMResult();
+      TransformerFactory.newInstance().newTransformer().transform(new JAXBSource(jaxbContext, repository), domResult);
+      Node repositoryNode = domResult.getNode();
+      generate(repository, outputDir, repositoryNode);
+    } catch (JAXBException | TransformerException e) {
+      throw new RuntimeException("Failed to transform repository to document", e);
+    }
+  }
 
-    Set<Integer> requiredGroupIds = getRequiredGroups();
+  private void generate(Repository repository, File outputDir, Node repositoryNode)
+      throws IOException, XPathExpressionException {
+    Set<Integer> requiredGroupIds = getRequiredGroups(repositoryNode);
 
     final List<CodeSetType> codeSetList = repository.getCodeSets().getCodeSet();
     for (final CodeSetType codeSet : codeSetList) {
@@ -252,8 +285,9 @@ public class DataDictionaryGenerator {
     return new File(outputDir, sb.toString());
   }
 
-  private Set<Integer> getRequiredGroups() throws XPathExpressionException {
+  private Set<Integer> getRequiredGroups(Node repositoryNode) throws XPathExpressionException {
     Set<Integer> groupIds = new HashSet<>();
+
     XPath xPath = XPathFactory.newInstance().newXPath();
     xPath.setNamespaceContext(new NamespaceContext() {
 
@@ -280,7 +314,7 @@ public class DataDictionaryGenerator {
     });
     String expression = "//fixr:groupRef[@presence='required']";
     NodeList nodeList = (NodeList) xPath.compile(expression)
-        .evaluate(xmlDocument.getDocumentElement(), XPathConstants.NODESET);
+        .evaluate(repositoryNode, XPathConstants.NODESET);
     for (int i = 0; i < nodeList.getLength(); i++) {
       if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
         Element element = (Element) nodeList.item(i);
@@ -311,15 +345,16 @@ public class DataDictionaryGenerator {
     return sb.toString().toUpperCase();
   }
 
-  private Repository unmarshal(InputStream inputFile)
+  private UnmarshalResult unmarshal(InputStream inputFile)
       throws JAXBException, ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
     builderFactory.setNamespaceAware(true);
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
-    xmlDocument = builder.parse(inputFile);
+    Document document = builder.parse(inputFile);
     final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
     final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-    return (Repository) jaxbUnmarshaller.unmarshal(xmlDocument);
+    Repository repository = (Repository) jaxbUnmarshaller.unmarshal(document);
+    return new UnmarshalResult(repository, document.getDocumentElement());
   }
 
   private void usage() {

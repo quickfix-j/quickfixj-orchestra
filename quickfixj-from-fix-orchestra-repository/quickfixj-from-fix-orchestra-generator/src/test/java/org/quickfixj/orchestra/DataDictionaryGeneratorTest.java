@@ -4,11 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import io.fixprotocol._2020.orchestra.repository.Repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
 
 public class DataDictionaryGeneratorTest {
 
@@ -41,6 +49,27 @@ public class DataDictionaryGeneratorTest {
         outputDir);
     try (BufferedReader brTest = new BufferedReader(
         new FileReader(outputDir.getAbsolutePath().concat(File.separator + "FIXLatest.xml")))) {
+      String firstLine = brTest.readLine();
+      assertEquals("<fix major=\"Latest\" minor=\"0\" servicepack=\"0\" extensionpack=\"269\">",
+          firstLine);
+    }
+  }
+
+  @Test
+  public void testGenerateFIXLatestFromRepository(@TempDir Path tempDir) throws Exception {
+    JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
+    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+    Repository repository;
+
+    try (InputStream stream = Thread.currentThread().getContextClassLoader().getResource("trade-latest.xml").openStream()) {
+      repository = (Repository) unmarshaller.unmarshal(stream);
+    }
+
+    Path outputDir = tempDir.resolve("output");
+    Files.createDirectory(outputDir);
+
+    generator.generate(repository, outputDir.toFile());
+    try (BufferedReader brTest = Files.newBufferedReader(outputDir.resolve("FIXLatest.xml"))) {
       String firstLine = brTest.readLine();
       assertEquals("<fix major=\"Latest\" minor=\"0\" servicepack=\"0\" extensionpack=\"269\">",
           firstLine);
