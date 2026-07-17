@@ -47,9 +47,7 @@ public class CodeGeneratorUtil {
 	static {
 		INDENTS = new String[5];
 		for (int i = 0; i < INDENTS.length; i++) {
-			final char[] chars = new char[i * CodeGeneratorJ.SPACES_PER_LEVEL];
-			Arrays.fill(chars, ' ');
-			INDENTS[i] = new String(chars);
+			INDENTS[i] = buildIndent(i);
 		}
 	}
 
@@ -57,6 +55,10 @@ public class CodeGeneratorUtil {
 		if (level >= 0 && level < INDENTS.length) {
 			return INDENTS[level];
 		}
+		return buildIndent(level);
+	}
+
+	private static String buildIndent(int level) {
 		final char[] chars = new char[level * CodeGeneratorJ.SPACES_PER_LEVEL];
 		Arrays.fill(chars, ' ');
 		return new String(chars);
