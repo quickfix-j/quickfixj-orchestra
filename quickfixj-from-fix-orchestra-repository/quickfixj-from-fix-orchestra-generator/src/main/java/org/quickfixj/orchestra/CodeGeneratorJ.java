@@ -307,7 +307,9 @@ public class CodeGeneratorJ {
 				generateMessageCracker(outputDir, fixt11MessagePackage, sessionMessages);
 			}
 
-			logger.log(Level.INFO, "Generated {0} field(s) and {1} message(s).", new Object[]{fieldCount, messageCount});
+			logger.log(Level.INFO, "Generated {0} {1} and {2} {3}.",
+					new Object[]{fieldCount, fieldCount == 1 ? "field" : "fields",
+							messageCount, messageCount == 1 ? "message" : "messages"});
 
 		} catch (JAXBException | IOException e) {
 			logger.log(Level.SEVERE, "Code generation failed", e);
