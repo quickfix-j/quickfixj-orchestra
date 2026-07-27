@@ -31,8 +31,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>commons-io</groupId>
-		    <artifactId>commons-io</artifactId>
+			<groupId>org.junit.vintage</groupId>
+			<artifactId>junit-vintage-engine</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		    	<groupId>commons-io</groupId>
+		    	<artifactId>commons-io</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -40,8 +45,8 @@
 			<artifactId>jakarta.xml.bind-api</artifactId>
 		</dependency>
 		<dependency>
-		  <groupId>info.picocli</groupId>
-		  <artifactId>picocli</artifactId>
+		  	<groupId>info.picocli</groupId>
+		  	<artifactId>picocli</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
