@@ -32,15 +32,19 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Warmup;
 
 /**
- * JMH benchmarks for {@link DataDictionaryGenerator}.
+ * JMH benchmarks for {@link DataDictionaryGenerator} comparing the pre-optimisation baseline
+ * against the {@link OptimisedDataDictionaryGenerator} variant introduced in PR #68.
  *
- * <p>These benchmarks measure the end-to-end cost of generating a QuickFIX/J data-dictionary XML
- * file from a FIX Orchestra repository file. PR #68 introduced three optimisations that reduce that
- * cost:
+ * <h2>Optimisations measured</h2>
  * <ul>
- *   <li>Buffered file I/O (wrapping {@code FileWriter} in {@code BufferedWriter})</li>
- *   <li>A cached, static {@code JAXBContext} (avoids a classpath-scan on every call)</li>
- *   <li>A cached, static {@code XPathExpression} (avoids re-compiling the XPath on every call)</li>
+ *   <li><strong>Pre-optimisation</strong> ({@link #generateDataDictionary()}): every call to
+ *       {@link DataDictionaryGenerator#generate} creates a new {@code JAXBContext} via
+ *       {@code JAXBContext.newInstance()} and re-compiles the XPath expression used to find
+ *       required groups. Both operations are expensive and avoidable.</li>
+ *   <li><strong>Optimised</strong> ({@link #generateDataDictionaryOptimised()}): uses
+ *       {@link OptimisedDataDictionaryGenerator}, which holds a single static {@code JAXBContext},
+ *       a per-thread cached {@code XPathExpression}, and wraps the output writer in a
+ *       {@code BufferedWriter} for fewer kernel write calls.</li>
  * </ul>
  *
  * <h2>Running the benchmarks</h2>
@@ -94,15 +98,29 @@ public class DataDictionaryGeneratorBenchmark {
     }
 
     /**
-     * Benchmark: full generation pipeline — unmarshal the Orchestra XML, transform it to a DOM,
-     * collect required-group IDs via XPath, then write the data-dictionary XML file.
+     * Benchmark (pre-optimisation baseline): full generation pipeline using the unmodified
+     * {@link DataDictionaryGenerator}.
      *
-     * <p>Before PR #68 every call paid the cost of {@code JAXBContext.newInstance()} (twice) and
-     * re-compiling the XPath expression. After PR #68 those are shared static fields.
+     * <p>On every call this creates a new {@code JAXBContext} and re-compiles the XPath expression
+     * used to locate required groups, as well as writing to an un-buffered {@code FileWriter}.
      */
     @Benchmark
     public void generateDataDictionary() throws Exception {
         DataDictionaryGenerator generator = new DataDictionaryGenerator();
+        generator.generate(resourceUrl.openStream(), outputDir);
+    }
+
+    /**
+     * Benchmark (optimised): full generation pipeline using
+     * {@link OptimisedDataDictionaryGenerator}.
+     *
+     * <p>The {@code JAXBContext} is initialised once at class-load time, the XPath expression is
+     * compiled once per thread, and the output is written via a {@code BufferedWriter} — all
+     * of which reduce the per-call overhead compared to the pre-optimisation baseline.
+     */
+    @Benchmark
+    public void generateDataDictionaryOptimised() throws Exception {
+        OptimisedDataDictionaryGenerator generator = new OptimisedDataDictionaryGenerator();
         generator.generate(resourceUrl.openStream(), outputDir);
     }
 
