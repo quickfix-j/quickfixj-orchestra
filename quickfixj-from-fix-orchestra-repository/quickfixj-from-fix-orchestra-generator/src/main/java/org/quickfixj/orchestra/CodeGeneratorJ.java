@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
@@ -66,6 +68,8 @@ import picocli.CommandLine.Option;
  *
  */
 public class CodeGeneratorJ {
+
+	private static final Logger logger = LoggerFactory.getLogger(CodeGeneratorJ.class);
 
 	static final int SPACES_PER_LEVEL = 2;
 	
@@ -116,15 +120,16 @@ public class CodeGeneratorJ {
 			generator.setGenerateBigDecimal(!options.isDisableBigDecimal);
 			generator.setGenerateOnlySession(options.isGenerateOnlySession);
 			if (generator.isExcludeSession && generator.isGenerateFixt11Package) {
-				System.err.printf("Options %s == %s and %s == %s are mutually exclusive.%n", Options.EXCLUDE_SESSION, options.isExcludeSession, 
-						                                                                   Options.GENERATE_FIXT11_PACKAGE, options.isGenerateFixt11Package );
+				logger.error("Options {} == {} and {} == {} are mutually exclusive.",
+						Options.EXCLUDE_SESSION, options.isExcludeSession,
+								Options.GENERATE_FIXT11_PACKAGE, options.isGenerateFixt11Package);
 				System.exit(FAIL_STATUS);
 			}
 			generator.setExcludeSession(options.isExcludeSession);
 			generator.setGenerateFixt11Package(options.isGenerateFixt11Package);
             generator.generate(inputStream, new File(options.outputDir));
 		} catch (Exception e) {
-			e.printStackTrace(System.err);
+			logger.error("Code generation failed", e);
 		}
 	}
 	
@@ -215,18 +220,22 @@ public class CodeGeneratorJ {
 
 			final File fileDir = getPackagePath(outputDir, FIELD_PACKAGE);
 			fileDir.mkdirs();
+			int fieldCount = 0;
 			for (final FieldType fieldType : fieldList) {
 				BigInteger id = fieldType.getId();				
 				if (isExcludeSession) {
 					if (nonSessionFieldIds.contains(id)) {
 						generateField(outputDir, fieldType, FIELD_PACKAGE, codeSets, this.isGenerateBigDecimal, this.decimalTypeString);
+						fieldCount++;
 					}
 				} else if (isGenerateOnlySession) {
 					if (sessionFieldIds.contains(id)) {
 						generateField(outputDir, fieldType, FIELD_PACKAGE, codeSets, this.isGenerateBigDecimal, this.decimalTypeString);
+						fieldCount++;
 					}
 				} else {
 					generateField(outputDir, fieldType, FIELD_PACKAGE, codeSets, this.isGenerateBigDecimal, this.decimalTypeString);
+					fieldCount++;
 				}
 			}
 
@@ -275,15 +284,16 @@ public class CodeGeneratorJ {
 //			final File messageDir = getPackagePath(outputDir, messagePackage);
 //			messageDir.mkdirs(); TODO has already been created for components
  
+			int messageCount = 0;
 			if (!isGenerateOnlySession) { 			// generate non Session Messages
-				generateMessages(outputDir, messages, componentPackage, messagePackage, groups, components, fields);
+				messageCount += generateMessages(outputDir, messages, componentPackage, messagePackage, groups, components, fields);
 			}
 			String fixt11MessagePackage = getPackage(QUICKFIX, FIXT11);
 			if (!isExcludeSession) {
 				if (isGenerateFixt11Package) {
-					generateMessages(outputDir, sessionMessages, getPackage(QUICKFIX, FIXT11, COMPONENT), fixt11MessagePackage, groups, components, fields);
+					messageCount += generateMessages(outputDir, sessionMessages, getPackage(QUICKFIX, FIXT11, COMPONENT), fixt11MessagePackage, groups, components, fields);
 				} else {
-					generateMessages(outputDir, sessionMessages, componentPackage, messagePackage, groups, components, fields);
+					messageCount += generateMessages(outputDir, sessionMessages, componentPackage, messagePackage, groups, components, fields);
 				}
 			}
 			if (!isGenerateOnlySession) { 
@@ -297,8 +307,12 @@ public class CodeGeneratorJ {
 				generateMessageCracker(outputDir, fixt11MessagePackage, sessionMessages);
 			}
 
+			logger.info("Generated {} {} and {} {}.",
+					fieldCount, fieldCount == 1 ? "field" : "fields",
+							messageCount, messageCount == 1 ? "message" : "messages");
+
 		} catch (JAXBException | IOException e) {
-			e.printStackTrace();
+			logger.error("Code generation failed", e);
 		}
 	}
 
@@ -318,7 +332,7 @@ public class CodeGeneratorJ {
 		return excludedMessages;
 	}
 
-	private static void generateMessages(File outputDir, 
+	private static int generateMessages(File outputDir, 
 			                             final List<MessageType> messages, 
 			                             final String componentPackage,
 			                             final String messagePackage, 
@@ -328,6 +342,7 @@ public class CodeGeneratorJ {
 		for (final MessageType message : messages) {
 			generateMessage(outputDir, message, messagePackage, componentPackage, groups,  components, fields);
 		}
+		return messages.size();
 	}
 	
 	private static void collectGroupsAndFields(List<MessageType> messageList, Set<BigInteger> includedFieldIds, 
@@ -362,7 +377,7 @@ public class CodeGeneratorJ {
 					includedFieldIds.add(numInGroupField.getId());
 					collectGroupsAndFieldsFromMembers(groupType.getComponentRefOrGroupRefOrFieldRef(),includedFieldIds, groups, collectedGroups, components, fields, isParseHeaderAndTrailer);
 				} else {
-					System.err.format("collectFieldIdsFromMembers : Group missing from repository; id=%d%n", id);
+					logger.warn("collectFieldIdsFromMembers : Group missing from repository; id={}", id);
 				}
 			} else if (member instanceof ComponentRefType) {
 				final int id = ((ComponentRefType) member).getId().intValue();
@@ -372,7 +387,7 @@ public class CodeGeneratorJ {
 						collectGroupsAndFieldsFromMembers(componentType.getComponentRefOrGroupRefOrFieldRef(),includedFieldIds, groups, collectedGroups, components, fields, isParseHeaderAndTrailer);
 					}
 				} else {
-					System.err.format("Component missing from repository; id=%d%n", id);
+					logger.warn("Component missing from repository; id={}", id);
 				}
 			}
 		}
@@ -432,7 +447,7 @@ public class CodeGeneratorJ {
 									  String decimalTypeString) throws IOException {
 		final String name = toTitleCase(fieldType.getName());
 		final File file = getClassFilePath(outputDir, packageName, name);
-		System.out.printf("Generating Field file : %s.%n", file.getName());
+		logger.debug("Generating field file: {}", file.getName());
 		try (FileWriter writer = new FileWriter(file)) {
 			writeFileHeader(writer);
 			writePackage(writer, packageName);
@@ -463,8 +478,7 @@ public class CodeGeneratorJ {
 			writeFieldArgConstructor(writer, name, fieldId, baseClassname, isGenerateBigDecimal);
 			writeEndClassDeclaration(writer);
 		} catch (Exception e) {
-			System.err.printf("Exception generating file : %s.%n", file.getName());
-			e.printStackTrace();
+			logger.error("Exception generating field file: {}", file.getName(), e);
 		}
 	}
 
@@ -498,7 +512,7 @@ public class CodeGeneratorJ {
 
 			final FieldType numInGroupField = fields.get(numInGroupId);
 			if (null == numInGroupField ) {
-				System.err.format("generateGroup : numInGroup field is missing from repository; id=%d%n", numInGroupId);
+				logger.warn("generateGroup : numInGroup field is missing from repository; id={}", numInGroupId);
 			} else {
 				final String numInGroupFieldName = numInGroupField.getName();
 				writeFieldAccessors(writer, numInGroupFieldName, numInGroupId);
@@ -525,7 +539,7 @@ public class CodeGeneratorJ {
 			messageClassname = messageClassname + toTitleCase(scenario);
 		}
 		final File file = getClassFilePath(outputDir, messagePackage, messageClassname);
-		System.out.printf("Generating Message file : %s.%n", file.getName());
+		logger.debug("Generating message file: {}", file.getName());
 		try (FileWriter writer = new FileWriter(file)) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
@@ -548,8 +562,7 @@ public class CodeGeneratorJ {
 
 			writeEndClassDeclaration(writer);
 		} catch (Exception e) {
-			System.err.printf("Exception generating file : %s.%n", file.getName());
-			e.printStackTrace();
+			logger.error("Exception generating message file: {}", file.getName(), e);
 		}
 	}
 
@@ -739,7 +752,7 @@ public class CodeGeneratorJ {
 				if (groupType != null) {
 					groupComponentFields.add(groupType.getNumInGroup().getId().intValue());
 				} else {
-					System.err.format("getGroupFields : Group missing from repository; id=%d%n", id);
+					logger.warn("getGroupFields : Group missing from repository; id={}", id);
 				}
 			} else if (member instanceof ComponentRefType) {
 				final ComponentType componentType = components.get(((ComponentRefType) member).getId().intValue());
@@ -970,7 +983,7 @@ public class CodeGeneratorJ {
 						final String parentQualifiedName = getQualifiedClassName(messagePackage, messageName);
 						writeGroupCreateCase(writer, parentQualifiedName, groupType, groups, fields);
 					} else {
-						System.err.format("writeGroupCreateMethod : Group missing from repository; id=%d%n", id);
+						logger.warn("writeGroupCreateMethod : Group missing from repository; id={}", id);
 					}
 
 				}
@@ -1056,7 +1069,7 @@ public class CodeGeneratorJ {
 					writeFieldAccessors(writer, numInGroupName, numInGroupId);
 					writeGroupInnerClass(writer, groupType, packageName, componentPackage, groups, components, fields);
 				} else {
-					System.err.format("writeMemberAccessors : Group missing from repository; id=%d%n", id);
+					logger.warn("writeMemberAccessors : Group missing from repository; id={}", id);
 				}
 			} else if (member instanceof ComponentRefType) {
 				final ComponentType componentType = components.get(((ComponentRefType) member).getId().intValue());
