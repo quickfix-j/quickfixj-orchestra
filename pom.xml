@@ -64,16 +64,10 @@
 	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<antlr.version>4.8-1</antlr.version>
 		<base.java.version>1.8</base.java.version>
-		<cucumber.version>1.2.6</cucumber.version>
 		<junit.jupiter.version>5.14.3</junit.jupiter.version>
-		<junit.version>4.13.2</junit.version>
 		<orchestra.repository.version>1.6.8</orchestra.repository.version>
-		<fix.orchestra.version>1.5.4</fix.orchestra.version>
 		<slf4j.version>1.7.22</slf4j.version>
-		<stringtemplate.version>4.3.1</stringtemplate.version>
-		<jackson.version>2.11.2</jackson.version>
 		<jaxb.version>2.3.3</jaxb.version>
 		<commons.io.version>2.21.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
@@ -96,12 +90,6 @@
 			<dependency>
 				<groupId>org.junit.jupiter</groupId>
 				<artifactId>junit-jupiter-engine</artifactId>
-				<version>${junit.jupiter.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.junit.jupiter</groupId>
-				<artifactId>junit-jupiter-params</artifactId>
 				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -144,11 +132,6 @@
 			<dependency>
 				<groupId>org.apache.maven</groupId>
 				<artifactId>maven-core</artifactId>
-				<version>${maven.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.maven</groupId>
-				<artifactId>maven-artifact</artifactId>
 				<version>${maven.version}</version>
 			</dependency>
 			<dependency>
