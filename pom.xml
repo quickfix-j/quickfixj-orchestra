@@ -66,6 +66,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<base.java.version>1.8</base.java.version>
 		<junit.jupiter.version>5.14.3</junit.jupiter.version>
+		<!-- DO NOT upgrade past 1.6.x: 1.7.x+ compiles base classes at Java 11
+		     bytecode (major version 55) and breaks compilation with JDK 8, despite
+		     advertising Multi-Release: true in the manifest. -->
 		<orchestra.repository.version>1.6.8</orchestra.repository.version>
 		<slf4j.version>1.7.22</slf4j.version>
 		<jaxb.version>2.3.3</jaxb.version>
@@ -228,6 +231,39 @@
 			</plugins>
 		</pluginManagement>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.5.0</version>
+				<dependencies>
+					<dependency>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>extra-enforcer-rules</artifactId>
+						<version>1.9.0</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<id>enforce-bytecode-version</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<enforceBytecodeVersion>
+									<maxJdkVersion>${base.java.version}</maxJdkVersion>
+									<!-- module-info.class is compiled at the declaring module's JDK
+									     level and is not a runtime concern for JDK 8 consumers. -->
+									<ignoreClasses>
+										<ignoreClass>module-info</ignoreClass>
+									</ignoreClasses>
+								</enforceBytecodeVersion>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>

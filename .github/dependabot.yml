@@ -8,6 +8,12 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
+    ignore:
+      # io.fixprotocol.orchestra:repository 1.7.x+ requires Java 11 (class files at bytecode level 55).
+      # Despite advertising Multi-Release: true, the base classes are compiled for Java 11 and cannot
+      # be loaded by JDK 8. Keep pinned to 1.6.x which is the last Java-8-compatible release.
+      - dependency-name: "io.fixprotocol.orchestra:repository"
+        versions: ["[1.7,)"]
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
