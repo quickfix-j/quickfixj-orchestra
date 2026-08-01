@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macOS-14, windows-latest]
+        os: [ubuntu-latest, macOS-14]
         java: [8, 11, 17]
       fail-fast: false
       max-parallel: 4
@@ -26,7 +26,27 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: ${{ matrix.java }}
+          cache: 'maven'
       - name: Test with Maven
-        env:
-          MAVEN_OPTS: "-Xms3g -Xmx3g"
-        run: mvn test -B -V -D"java.util.logging.config.file"="logging.properties" -D"http.keepAlive"="false" -D"maven.wagon.http.pool"="false" -D"maven.wagon.httpconnectionManager.ttlSeconds"="120"
+        run: ./mvnw test -B -V -D"java.util.logging.config.file"="logging.properties" -D"http.keepAlive"="false" -D"maven.wagon.http.pool"="false" -D"maven.wagon.httpconnectionManager.ttlSeconds"="120"
+
+  test-windows:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest]
+        java: [8, 11, 17]
+      fail-fast: false
+      max-parallel: 3
+    name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'corretto'
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+      - name: Test with Maven on Windows
+        run: ./mvnw.cmd test -B -V -D"java.util.logging.config.file"="logging.properties" -D"http.keepAlive"="false" -D"maven.wagon.http.pool"="false" -D"maven.wagon.httpconnectionManager.ttlSeconds"="120"
