@@ -67,7 +67,7 @@
 		<base.java.version>1.8</base.java.version>
 		<junit.jupiter.version>5.14.3</junit.jupiter.version>
 		<orchestra.repository.version>1.6.8</orchestra.repository.version>
-		<slf4j.version>1.7.22</slf4j.version>
+		<slf4j.version>2.0.18</slf4j.version>
 		<jaxb.version>2.3.3</jaxb.version>
 		<commons.io.version>2.22.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
