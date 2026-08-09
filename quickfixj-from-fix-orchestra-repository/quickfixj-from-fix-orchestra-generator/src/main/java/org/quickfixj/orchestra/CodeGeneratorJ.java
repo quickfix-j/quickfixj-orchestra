@@ -113,7 +113,7 @@ public class CodeGeneratorJ {
 	 * @param outputDir  base directory for generated Java sources
 	 * @throws IOException if writing the temp file or reading the input fails
 	 */
-	public void generate(InputStream inputFile, File outputDir) throws IOException {
+	public void generate(InputStream inputFile, File outputDir) throws IOException, TransformerException {
 		// Copy the stream to a temp file so Saxon can parse it twice (fields + messages).
 		File tempInput = File.createTempFile("orchestra-input-", ".xml");
 		try {
@@ -121,13 +121,8 @@ public class CodeGeneratorJ {
 
 			Map<String, String> params = buildParams();
 			OrchestraTransformer transformer = new OrchestraTransformer();
-
-			try {
-				transformer.transform(tempInput, "xslt/code-generator-fields.xsl", outputDir, params);
-				transformer.transform(tempInput, "xslt/code-generator-messages.xsl", outputDir, params);
-			} catch (TransformerException e) {
-				logger.error("Code generation failed", e);
-			}
+			transformer.transform(tempInput, "xslt/code-generator-fields.xsl", outputDir, params);
+			transformer.transform(tempInput, "xslt/code-generator-messages.xsl", outputDir, params);
 		} finally {
 			tempInput.delete();
 		}
