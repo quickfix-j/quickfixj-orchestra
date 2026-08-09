@@ -90,10 +90,13 @@
 
   <xsl:function name="qfj:message-class-name" as="xs:string">
     <xsl:param name="message" as="element(fixr:message)"/>
-    <xsl:sequence select="if ($message/@scenario = 'base') then string($message/@name) else concat($message/@name, qfj:toTitleCase(string($message/@scenario)))"/>
+    <xsl:sequence select="if (not($message/@scenario) or $message/@scenario = 'base') then string($message/@name) else concat($message/@name, qfj:toTitleCase(string($message/@scenario)))"/>
   </xsl:function>
 
   <xsl:template match="/">
+    <xsl:variable name="sessionComponentTarget" as="xs:string" select="if (qfj:boolean-param($generateFixt11Package)) then $fixt11ComponentPackage else $componentPackage"/>
+    <xsl:variable name="sessionMessageTarget" as="xs:string" select="if (qfj:boolean-param($generateFixt11Package)) then $fixt11MessagePackage else $messagePackage"/>
+
     <xsl:if test="not(qfj:boolean-param($generateOnlySession))">
       <xsl:for-each select="/fixr:repository/fixr:components/fixr:component[not(@id = ('1024', '1025'))]">
         <xsl:call-template name="generate-component-file">
@@ -114,23 +117,23 @@
           <xsl:with-param name="componentPackageName" select="$componentPackage"/>
         </xsl:call-template>
       </xsl:for-each>
-      <xsl:call-template name="generate-message-base-file">
-        <xsl:with-param name="packageName" select="$messagePackage"/>
-      </xsl:call-template>
-      <xsl:call-template name="generate-message-factory-file">
-        <xsl:with-param name="packageName" select="$messagePackage"/>
-        <xsl:with-param name="messages" select="$nonSessionMessages"/>
-      </xsl:call-template>
-      <xsl:call-template name="generate-message-cracker-file">
-        <xsl:with-param name="packageName" select="$messagePackage"/>
-        <xsl:with-param name="messages" select="$nonSessionMessages"/>
-      </xsl:call-template>
+      <xsl:if test="qfj:boolean-param($excludeSession) or $sessionMessageTarget != $messagePackage">
+        <xsl:call-template name="generate-message-base-file">
+          <xsl:with-param name="packageName" select="$messagePackage"/>
+        </xsl:call-template>
+        <xsl:call-template name="generate-message-factory-file">
+          <xsl:with-param name="packageName" select="$messagePackage"/>
+          <xsl:with-param name="messages" select="$nonSessionMessages"/>
+        </xsl:call-template>
+        <xsl:call-template name="generate-message-cracker-file">
+          <xsl:with-param name="packageName" select="$messagePackage"/>
+          <xsl:with-param name="messages" select="$nonSessionMessages"/>
+        </xsl:call-template>
+      </xsl:if>
     </xsl:if>
 
     <xsl:if test="not(qfj:boolean-param($excludeSession))">
-      <xsl:variable name="sessionComponentTarget" as="xs:string" select="if (qfj:boolean-param($generateFixt11Package)) then $fixt11ComponentPackage else $componentPackage"/>
-      <xsl:variable name="sessionMessageTarget" as="xs:string" select="if (qfj:boolean-param($generateFixt11Package)) then $fixt11MessagePackage else $messagePackage"/>
-      <xsl:for-each select="/fixr:repository/fixr:groups/fixr:group[xs:integer(@id) = $sessionGroupIds]">
+      <xsl:for-each select="/fixr:repository/fixr:groups/fixr:group[xs:integer(@id) = $sessionGroupIds and (qfj:boolean-param($generateOnlySession) or $sessionComponentTarget != $componentPackage or not(xs:integer(@id) = $nonSessionGroupIds))]">
         <xsl:call-template name="generate-group-file">
           <xsl:with-param name="group" select="."/>
           <xsl:with-param name="packageName" select="$sessionComponentTarget"/>
@@ -143,17 +146,34 @@
           <xsl:with-param name="componentPackageName" select="$sessionComponentTarget"/>
         </xsl:call-template>
       </xsl:for-each>
-      <xsl:call-template name="generate-message-base-file">
-        <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
-      </xsl:call-template>
-      <xsl:call-template name="generate-message-factory-file">
-        <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
-        <xsl:with-param name="messages" select="$sessionMessages"/>
-      </xsl:call-template>
-      <xsl:call-template name="generate-message-cracker-file">
-        <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
-        <xsl:with-param name="messages" select="$sessionMessages"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$sessionMessageTarget = $messagePackage and not(qfj:boolean-param($generateOnlySession))">
+          <xsl:call-template name="generate-message-base-file">
+            <xsl:with-param name="packageName" select="$messagePackage"/>
+          </xsl:call-template>
+          <xsl:call-template name="generate-message-factory-file">
+            <xsl:with-param name="packageName" select="$messagePackage"/>
+            <xsl:with-param name="messages" select="($nonSessionMessages, $sessionMessages)"/>
+          </xsl:call-template>
+          <xsl:call-template name="generate-message-cracker-file">
+            <xsl:with-param name="packageName" select="$messagePackage"/>
+            <xsl:with-param name="messages" select="($nonSessionMessages, $sessionMessages)"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="generate-message-base-file">
+            <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
+          </xsl:call-template>
+          <xsl:call-template name="generate-message-factory-file">
+            <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
+            <xsl:with-param name="messages" select="$sessionMessages"/>
+          </xsl:call-template>
+          <xsl:call-template name="generate-message-cracker-file">
+            <xsl:with-param name="packageName" select="$sessionMessageTarget"/>
+            <xsl:with-param name="messages" select="$sessionMessages"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:template>
 
@@ -293,13 +313,13 @@
       <xsl:text>import quickfix.field.*;&#10;</xsl:text>
       <xsl:text>&#10;public class MessageCracker {&#10;</xsl:text>
       <xsl:text>&#10;  public void onMessage(quickfix.Message message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {&#10;    throw new UnsupportedMessageType();&#10;  }&#10;</xsl:text>
-      <xsl:for-each select="$messages[@scenario = 'base']">
+      <xsl:for-each select="$messages[not(@scenario) or @scenario = 'base']">
         <xsl:text>  /**&#10;   * Callback for </xsl:text><xsl:value-of select="@name"/><xsl:text> message.&#10;   * @param message&#10;   * @param sessionID&#10;   * @throws FieldNotFound&#10;   * @throws UnsupportedMessageType&#10;   * @throws IncorrectTagValue&#10;   */&#10;</xsl:text>
         <xsl:text>&#10;  public void onMessage(</xsl:text><xsl:value-of select="@name"/><xsl:text> message, SessionID sessionID) throws FieldNotFound, UnsupportedMessageType, IncorrectTagValue {&#10;    throw new UnsupportedMessageType();&#10;  }&#10;</xsl:text>
       </xsl:for-each>
       <xsl:text>&#10;  public void crack(quickfix.Message message, SessionID sessionID)&#10;    throws UnsupportedMessageType, FieldNotFound, IncorrectTagValue {&#10;    </xsl:text><xsl:value-of select="$crackMethodName"/><xsl:text>((Message) message, sessionID);&#10;  }&#10;</xsl:text>
       <xsl:text>&#10;  public void </xsl:text><xsl:value-of select="$crackMethodName"/><xsl:text>(Message message, SessionID sessionID)&#10;    throws UnsupportedMessageType, FieldNotFound, IncorrectTagValue {&#10;    String type = message.getHeader().getString(MsgType.FIELD);&#10;    switch (type) {&#10;</xsl:text>
-      <xsl:for-each select="$messages[@scenario = 'base']">
+      <xsl:for-each select="$messages[not(@scenario) or @scenario = 'base']">
         <xsl:text>    case </xsl:text><xsl:value-of select="@name"/><xsl:text>.MSGTYPE:&#10;      onMessage((</xsl:text><xsl:value-of select="@name"/><xsl:text>)message, sessionID);&#10;      break;&#10;</xsl:text>
       </xsl:for-each>
       <xsl:text>    default:&#10;      onMessage(message, sessionID);&#10;    }&#10;  }&#10;}&#10;</xsl:text>
@@ -316,18 +336,19 @@
       <xsl:text>import quickfix.Group;&#10;</xsl:text>
       <xsl:text>&#10;public class MessageFactory implements quickfix.MessageFactory {&#10;</xsl:text>
       <xsl:text>&#10;  public Message create(String beginString, String msgType) {&#10;    switch (msgType) {&#10;</xsl:text>
-      <xsl:for-each select="$messages[@scenario = 'base']">
+      <xsl:for-each select="$messages[not(@scenario) or @scenario = 'base']">
         <xsl:text>    case </xsl:text><xsl:value-of select="$packageName"/><xsl:text>.</xsl:text><xsl:value-of select="@name"/><xsl:text>.MSGTYPE:&#10;      return new </xsl:text><xsl:value-of select="$packageName"/><xsl:text>.</xsl:text><xsl:value-of select="@name"/><xsl:text>();&#10;</xsl:text>
       </xsl:for-each>
       <xsl:text>    }&#10;    return new </xsl:text><xsl:value-of select="$packageName"/><xsl:text>.Message();&#10;  }&#10;</xsl:text>
       <xsl:text>&#10;  public Group create(String beginString, String msgType, int correspondingFieldID) {&#10;    switch (msgType) {&#10;</xsl:text>
-      <xsl:for-each select="$messages[@scenario = 'base']">
+      <xsl:for-each select="$messages[not(@scenario) or @scenario = 'base']">
+        <xsl:variable name="messageName" as="xs:string" select="string(@name)"/>
         <xsl:text>  case </xsl:text><xsl:value-of select="$packageName"/><xsl:text>.</xsl:text><xsl:value-of select="@name"/><xsl:text>.MSGTYPE:&#10;    switch (correspondingFieldID) {&#10;</xsl:text>
         <xsl:for-each select="fixr:structure/fixr:groupRef">
           <xsl:variable name="group" as="element(fixr:group)?" select="key('groupById', @id)[1]"/>
           <xsl:if test="$group">
             <xsl:call-template name="write-group-create-case">
-              <xsl:with-param name="parentQualifiedName" select="concat($packageName, '.', current()/../@name)"/>
+              <xsl:with-param name="parentQualifiedName" select="concat($packageName, '.', $messageName)"/>
               <xsl:with-param name="group" select="$group"/>
             </xsl:call-template>
           </xsl:if>
