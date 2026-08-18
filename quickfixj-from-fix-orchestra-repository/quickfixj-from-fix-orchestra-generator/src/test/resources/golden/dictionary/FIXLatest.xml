@@ -14211,7 +14211,7 @@
     <field number="84" name="CxlQty" type="QTY"/>
     <field number="85" name="NoDlvyInst" type="NUMINGROUP"/>
     <field number="87" name="AllocStatus" type="INT">
-      <value enum="0" description="ACCEPTED1"/>
+      <value enum="0" description="ACCEPTED"/>
       <value enum="1" description="BLOCK_LEVEL_REJECT"/>
       <value enum="2" description="ACCOUNT_LEVEL_REJECT"/>
       <value enum="3" description="RECEIVED"/>
