@@ -13884,7 +13884,7 @@
       <value enum="3" description="REJECT"/>
       <value enum="4" description="SEQUENCE_RESET"/>
       <value enum="5" description="LOGOUT"/>
-      <value enum="6" description="INDICATION__OF__INTEREST"/>
+      <value enum="6" description="INDICATION_OF_INTEREST"/>
       <value enum="7" description="ADVERTISEMENT"/>
       <value enum="8" description="EXECUTION_REPORT"/>
       <value enum="9" description="ORDER_CANCEL_REJECT"/>
