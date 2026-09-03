@@ -13,6 +13,8 @@
 
   <xsl:variable name="allGroups" as="element(fixr:group)*" select="/fixr:repository/fixr:groups/fixr:group"/>
   <xsl:variable name="allComponents" as="element(fixr:component)*" select="/fixr:repository/fixr:components/fixr:component"/>
+  <xsl:variable name="repositoryVersion" as="xs:string" select="qfj:splitOffVersion(string(/fixr:repository/@version))"/>
+  <xsl:variable name="repositoryExtensionPack" as="xs:string" select="qfj:extractExtensionPack(string(/fixr:repository/@version))"/>
 
   <xsl:function name="qfj:indent" as="xs:string">
     <xsl:param name="level" as="xs:integer"/>
@@ -40,7 +42,10 @@
     <xsl:for-each select="$members">
       <xsl:choose>
         <xsl:when test="self::fixr:fieldRef">
-          <xsl:sequence select="xs:integer(@id)"/>
+          <xsl:variable name="field" select="key('fieldById', @id, root(.))[1]"/>
+          <xsl:if test="$field and qfj:is-active($field, $repositoryVersion, $repositoryExtensionPack)">
+            <xsl:sequence select="xs:integer(@id)"/>
+          </xsl:if>
         </xsl:when>
         <xsl:when test="self::fixr:groupRef">
           <xsl:variable name="group" as="element(fixr:group)?" select="key('groupById', @id, root(.))[1]"/>

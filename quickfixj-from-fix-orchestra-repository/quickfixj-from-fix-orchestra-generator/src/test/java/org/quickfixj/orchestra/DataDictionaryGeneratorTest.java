@@ -54,6 +54,7 @@ public class DataDictionaryGeneratorTest {
         java.nio.charset.StandardCharsets.UTF_8);
     assertFalse(dictionary.contains("enum=\"6\" description=\"BENCHMARK\""));
     assertFalse(dictionary.contains("enum=\"L\" description=\"LAST_PEG\""));
+    assertFalse(dictionary.contains("number=\"575\" name=\"OddLot\""));
   }
 
   @Test

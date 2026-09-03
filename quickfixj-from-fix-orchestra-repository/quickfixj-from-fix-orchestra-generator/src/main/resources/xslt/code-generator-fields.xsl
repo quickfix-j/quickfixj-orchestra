@@ -31,6 +31,7 @@
     <xsl:variable name="extensionPack" as="xs:string" select="qfj:extractExtensionPack(string(/fixr:repository/@version))"/>
 
     <xsl:for-each select="/fixr:repository/fixr:fields/fixr:field[
+      qfj:is-active(., $version, $extensionPack) and
       (qfj:boolean-param($excludeSession) and xs:integer(@id) = $nonSessionOnlyFieldIds)
       or (qfj:boolean-param($generateOnlySession) and xs:integer(@id) = $sessionFieldIds)
       or (not(qfj:boolean-param($excludeSession)) and not(qfj:boolean-param($generateOnlySession)))

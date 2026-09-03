@@ -68,7 +68,7 @@
       </xsl:for-each>
       <xsl:text>  &lt;/components&gt;&#10;</xsl:text>
       <xsl:text>  &lt;fields&gt;&#10;</xsl:text>
-      <xsl:for-each select="/fixr:repository/fixr:fields/fixr:field">
+      <xsl:for-each select="/fixr:repository/fixr:fields/fixr:field[qfj:is-active(., $repositoryVersion, $repositoryExtensionPack)]">
         <xsl:variable name="codeSet" as="element(fixr:codeSet)?"
           select="key('codeSetByName', @type)[qfj:is-active(., $fileName, $extensionPack)][1]"/>
         <xsl:variable name="fixType" as="xs:string" select="upper-case(if ($codeSet) then string($codeSet/@type) else string(@type))"/>
@@ -99,7 +99,7 @@
       <xsl:choose>
         <xsl:when test="self::fixr:fieldRef">
           <xsl:variable name="field" as="element(fixr:field)?" select="key('fieldById', @id)[1]"/>
-          <xsl:if test="$field">
+          <xsl:if test="$field and qfj:is-active($field, $repositoryVersion, $repositoryExtensionPack)">
             <xsl:text>      &lt;field name="</xsl:text><xsl:value-of select="$field/@name"/><xsl:text>" required="</xsl:text><xsl:value-of select="qfj:required-flag(@presence)"/><xsl:text>"/>&#10;</xsl:text>
           </xsl:if>
         </xsl:when>

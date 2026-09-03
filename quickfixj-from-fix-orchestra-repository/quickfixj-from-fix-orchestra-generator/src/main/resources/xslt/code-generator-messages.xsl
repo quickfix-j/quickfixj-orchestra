@@ -448,7 +448,7 @@
       <xsl:choose>
         <xsl:when test="self::fixr:fieldRef">
           <xsl:variable name="field" as="element(fixr:field)?" select="key('fieldById', @id)[1]"/>
-          <xsl:if test="$field">
+          <xsl:if test="$field and qfj:is-active($field, $versionBase, qfj:extractExtensionPack($version))">
             <xsl:call-template name="write-field-accessors">
               <xsl:with-param name="name" select="string($field/@name)"/>
               <xsl:with-param name="id" select="xs:integer(@id)"/>
