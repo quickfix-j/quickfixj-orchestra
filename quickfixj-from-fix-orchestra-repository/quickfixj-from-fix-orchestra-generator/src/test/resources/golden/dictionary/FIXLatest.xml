@@ -10731,6 +10731,7 @@
       <field name="CollateralPercentOverage" required="N"/>
       <field name="CollateralMarketPrice" required="N"/>
       <field name="CollateralReinvestmentRate" required="N"/>
+      <component name="CollateralReinvestmentGrp" required="N"/>
       <field name="UnderlyingRefID" required="N"/>
       </group>
     </component>
@@ -14592,7 +14593,7 @@
       <value enum="3" description="REJECT"/>
       <value enum="4" description="SEQUENCE_RESET"/>
       <value enum="5" description="LOGOUT"/>
-      <value enum="6" description="INDICATION__OF__INTEREST"/>
+      <value enum="6" description="IOI"/>
       <value enum="7" description="ADVERTISEMENT"/>
       <value enum="8" description="EXECUTION_REPORT"/>
       <value enum="9" description="ORDER_CANCEL_REJECT"/>
@@ -14998,7 +14999,7 @@
       <value enum="Y" description="POSSIBLE_RESEND"/>
     </field>
     <field number="98" name="EncryptMethod" type="INT">
-      <value enum="0" description="NONE__OTHER"/>
+      <value enum="0" description="NONE"/>
       <value enum="1" description="PKCS"/>
       <value enum="2" description="DES"/>
       <value enum="3" description="PKCSDES"/>
@@ -15517,6 +15518,7 @@
     <field number="221" name="BenchmarkCurveName" type="STRING">
       <value enum="EONIA" description="EONIA"/>
       <value enum="EUREPO" description="EUREPO"/>
+      <value enum="Euribor" description="EURIBOR"/>
       <value enum="FutureSWAP" description="FUTURE_SWAP"/>
       <value enum="LIBID" description="LIBID"/>
       <value enum="LIBOR" description="LIBOR"/>
@@ -16550,7 +16552,7 @@
       <value enum="3" description="REJECT"/>
       <value enum="4" description="SEQUENCE_RESET"/>
       <value enum="5" description="LOGOUT"/>
-      <value enum="6" description="INDICATION__OF__INTEREST"/>
+      <value enum="6" description="IOI"/>
       <value enum="7" description="ADVERTISEMENT"/>
       <value enum="8" description="EXECUTION_REPORT"/>
       <value enum="9" description="ORDER_CANCEL_REJECT"/>
@@ -16731,19 +16733,19 @@
       <value enum="1" description="REQUIRED_TAG_MISSING"/>
       <value enum="2" description="TAG_NOT_DEFINED_FOR_THIS_MESSAGE_TYPE"/>
       <value enum="3" description="UNDEFINED_TAG"/>
-      <value enum="4" description="TAG__SPECIFIED__WITHOUT__A__VALUE"/>
+      <value enum="4" description="TAG_SPECIFIED_WITHOUT_AVALUE"/>
       <value enum="5" description="VALUE_IS_INCORRECT"/>
       <value enum="6" description="INCORRECT_DATA_FORMAT_FOR_VALUE"/>
       <value enum="7" description="DECRYPTION_PROBLEM"/>
       <value enum="8" description="SIGNATURE_PROBLEM"/>
-      <value enum="9" description="COMPID__PROBLEM"/>
-      <value enum="10" description="SENDINGTIME__ACCURACY__PROBLEM"/>
-      <value enum="11" description="INVALID__MSGTYPE"/>
+      <value enum="9" description="COMP_IDPROBLEM"/>
+      <value enum="10" description="SENDING_TIME_ACCURACY_PROBLEM"/>
+      <value enum="11" description="INVALID_MSG_TYPE"/>
       <value enum="12" description="XMLVALIDATION_ERROR"/>
       <value enum="13" description="TAG_APPEARS_MORE_THAN_ONCE"/>
       <value enum="14" description="TAG_SPECIFIED_OUT_OF_REQUIRED_ORDER"/>
       <value enum="15" description="REPEATING_GROUP_FIELDS_OUT_OF_ORDER"/>
-      <value enum="16" description="INCORRECT__NUMINGROUP__COUNT__FOR__REPEATING__GROUP"/>
+      <value enum="16" description="INCORRECT_NUM_IN_GROUP_COUNT_FOR_REPEATING_GROUP"/>
       <value enum="17" description="NON_DATA_VALUE_INCLUDES_FIELD_DELIMITER"/>
       <value enum="18" description="INVALID_UNSUPPORTED_APPL_VER"/>
       <value enum="99" description="OTHER"/>
@@ -17934,7 +17936,7 @@
       <value enum="5" description="STATUS_FOR_ORDERS_FOR_ASECURITY_TYPE"/>
       <value enum="6" description="STATUS_FOR_ORDERS_FOR_ATRADING_SESSION"/>
       <value enum="7" description="STATUS_FOR_ALL_ORDERS"/>
-      <value enum="8" description="STATUS__FOR__ORDERS__FOR__A__PARTY__ID"/>
+      <value enum="8" description="STATUS_FOR_ORDERS_FOR_APARTY_ID"/>
       <value enum="9" description="STATUS_FOR_SECURITY_ISSUER"/>
       <value enum="10" description="STATUS_FOR_ISSUER_OF_UNDERLYING_SECURITY"/>
     </field>
@@ -18489,6 +18491,7 @@
     <field number="677" name="LegBenchmarkCurveName" type="STRING">
       <value enum="EONIA" description="EONIA"/>
       <value enum="EUREPO" description="EUREPO"/>
+      <value enum="Euribor" description="EURIBOR"/>
       <value enum="FutureSWAP" description="FUTURE_SWAP"/>
       <value enum="LIBID" description="LIBID"/>
       <value enum="LIBOR" description="LIBOR"/>
@@ -22343,6 +22346,7 @@
       <value enum="7" description="PREVIOUS_ORDER_IDENTIFIER"/>
       <value enum="8" description="PREVIOUS_QUOTE_IDENTIFIER"/>
       <value enum="9" description="PARENT_ORDER_IDENTIFIER"/>
+      <value enum="A" description="MANUAL_ORDER_IDENTIFIER"/>
     </field>
     <field number="1082" name="SecondaryDisplayQty" type="QTY"/>
     <field number="1083" name="DisplayWhen" type="CHAR">
@@ -26818,7 +26822,7 @@
       <value enum="3" description="REJECT"/>
       <value enum="4" description="SEQUENCE_RESET"/>
       <value enum="5" description="LOGOUT"/>
-      <value enum="6" description="INDICATION__OF__INTEREST"/>
+      <value enum="6" description="IOI"/>
       <value enum="7" description="ADVERTISEMENT"/>
       <value enum="8" description="EXECUTION_REPORT"/>
       <value enum="9" description="ORDER_CANCEL_REJECT"/>
@@ -28385,12 +28389,15 @@
       <value enum="27" description="TZTIME_ONLY"/>
       <value enum="28" description="TZTIMESTAMP"/>
       <value enum="31" description="XMLDATA"/>
+      <value enum="12" description="CHAR"/>
       <value enum="13" description="BOOLEAN"/>
+      <value enum="6" description="FLOAT"/>
       <value enum="7" description="QTY"/>
       <value enum="8" description="PRICE"/>
       <value enum="9" description="PRICE_OFFSET"/>
       <value enum="10" description="AMT"/>
       <value enum="11" description="PERCENTAGE"/>
+      <value enum="1" description="INT"/>
       <value enum="2" description="LENGTH"/>
       <value enum="3" description="NUM_IN_GROUP"/>
       <value enum="4" description="SEQ_NUM"/>

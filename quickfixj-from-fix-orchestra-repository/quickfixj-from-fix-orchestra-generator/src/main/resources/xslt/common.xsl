@@ -89,6 +89,6 @@
 
   <xsl:function name="qfj:precedeCapsWithUnderscore" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
-    <xsl:sequence select="upper-case(replace($text, '([a-z])([A-Z])', '$1_$2'))"/>
+    <xsl:sequence select="upper-case(replace(replace($text, '([a-z])([A-Z])', '$1_$2'), '([0-9])([A-Z])', '$1_$2'))"/>
   </xsl:function>
 </xsl:stylesheet>
