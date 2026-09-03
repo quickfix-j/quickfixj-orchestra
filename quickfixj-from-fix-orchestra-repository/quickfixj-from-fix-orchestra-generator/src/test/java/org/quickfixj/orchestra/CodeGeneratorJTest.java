@@ -2,6 +2,10 @@ package org.quickfixj.orchestra;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -97,6 +101,27 @@ public class CodeGeneratorJTest {
 	  assertThrows(MissingParameterException.class, () -> new CommandLine(options).parseArgs(args) );
   }
 
+  @Test
+  void testFIXLatestDoesNotGenerateDeprecatedValues(@org.junit.jupiter.api.io.TempDir Path tempDir)
+      throws Exception {
+    try (InputStream orchestra = getClass().getResourceAsStream("/OrchestraFIXLatest.xml")) {
+      generator.setGenerateFixt11Package(false);
+      generator.generate(orchestra, tempDir.toFile());
+    }
+    String generated = Files.walk(tempDir)
+        .filter(Files::isRegularFile)
+        .map(path -> {
+          try {
+            return new String(Files.readAllBytes(path), java.nio.charset.StandardCharsets.UTF_8);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.joining("\n"));
+    assertFalse(generated.contains("public static final int BENCHMARK = 6;"));
+    assertFalse(generated.contains("public static final char LAST_PEG = 'L';"));
+  }
+
   @Test 
   void testExecute() {
 	  String outputDir = "target/generated-sources";
@@ -139,4 +164,3 @@ public class CodeGeneratorJTest {
             new File("target/spec/generated-sources/withDouble/latest"));
   }
 }
-

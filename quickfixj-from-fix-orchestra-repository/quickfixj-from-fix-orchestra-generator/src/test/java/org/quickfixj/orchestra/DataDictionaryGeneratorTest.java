@@ -1,6 +1,7 @@
 package org.quickfixj.orchestra;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -49,6 +50,10 @@ public class DataDictionaryGeneratorTest {
       assertEquals("<fix major=\"Latest\" minor=\"0\" servicepack=\"0\" extensionpack=\"269\">",
           firstLine);
     }
+    String dictionary = new String(Files.readAllBytes(outputDir.toPath().resolve("FIXLatest.xml")),
+        java.nio.charset.StandardCharsets.UTF_8);
+    assertFalse(dictionary.contains("enum=\"6\" description=\"BENCHMARK\""));
+    assertFalse(dictionary.contains("enum=\"L\" description=\"LAST_PEG\""));
   }
 
   @Test
