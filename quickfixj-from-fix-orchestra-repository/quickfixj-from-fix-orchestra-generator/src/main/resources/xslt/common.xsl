@@ -87,6 +87,17 @@
     <xsl:sequence select="if (matches($version, 'SP[0-9]+')) then replace($version, '^.*SP([0-9]+).*$', '$1') else '0'"/>
   </xsl:function>
 
+  <xsl:function name="qfj:is-active" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="version" as="xs:string"/>
+    <xsl:param name="extensionPack" as="xs:string"/>
+    <xsl:sequence select="
+      not($version = 'FIX.Latest' and $element/@deprecated and
+        (not($element/@deprecated = 'FIX.Latest') or
+         not($element/@deprecatedEP castable as xs:integer) or
+         xs:integer($element/@deprecatedEP) le xs:integer($extensionPack)))"/>
+  </xsl:function>
+
   <xsl:function name="qfj:precedeCapsWithUnderscore" as="xs:string">
     <xsl:param name="text" as="xs:string"/>
     <xsl:sequence select="upper-case(replace($text, '([a-z])([A-Z])', '$1_$2'))"/>

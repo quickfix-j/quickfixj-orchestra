@@ -69,13 +69,14 @@
       <xsl:text>  &lt;/components&gt;&#10;</xsl:text>
       <xsl:text>  &lt;fields&gt;&#10;</xsl:text>
       <xsl:for-each select="/fixr:repository/fixr:fields/fixr:field">
-        <xsl:variable name="codeSet" as="element(fixr:codeSet)?" select="key('codeSetByName', @type)[1]"/>
+        <xsl:variable name="codeSet" as="element(fixr:codeSet)?"
+          select="key('codeSetByName', @type)[qfj:is-active(., $fileName, $extensionPack)][1]"/>
         <xsl:variable name="fixType" as="xs:string" select="upper-case(if ($codeSet) then string($codeSet/@type) else string(@type))"/>
         <xsl:text>    &lt;field number="</xsl:text><xsl:value-of select="@id"/><xsl:text>" name="</xsl:text><xsl:value-of select="@name"/><xsl:text>" type="</xsl:text><xsl:value-of select="$fixType"/>
         <xsl:choose>
           <xsl:when test="$codeSet">
             <xsl:text>"&gt;&#10;</xsl:text>
-            <xsl:for-each select="$codeSet/fixr:code">
+            <xsl:for-each select="$codeSet/fixr:code[qfj:is-active(., $fileName, $extensionPack)]">
               <xsl:text>      &lt;value enum="</xsl:text><xsl:value-of select="@value"/><xsl:text>" description="</xsl:text><xsl:value-of select="qfj:precedeCapsWithUnderscore(@name)"/><xsl:text>"/>&#10;</xsl:text>
             </xsl:for-each>
             <xsl:text>    &lt;/field&gt;&#10;</xsl:text>

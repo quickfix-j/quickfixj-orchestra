@@ -27,6 +27,8 @@
       select="distinct-values(for $message in /fixr:repository/fixr:messages/fixr:message[not(@category = 'Session')] return qfj:collectFieldIds($message/fixr:structure/*[self::fixr:fieldRef or self::fixr:componentRef or self::fixr:groupRef], false()))"/>
     <xsl:variable name="nonSessionOnlyFieldIds" as="xs:integer*" select="$allNonSessionFieldIds[not(. = $sessionFieldIds)]"/>
     <xsl:variable name="decimalTypeString" as="xs:string" select="if (qfj:boolean-param($generateBigDecimal)) then 'DecimalField' else 'DoubleField'"/>
+    <xsl:variable name="version" as="xs:string" select="qfj:splitOffVersion(string(/fixr:repository/@version))"/>
+    <xsl:variable name="extensionPack" as="xs:string" select="qfj:extractExtensionPack(string(/fixr:repository/@version))"/>
 
     <xsl:for-each select="/fixr:repository/fixr:fields/fixr:field[
       (qfj:boolean-param($excludeSession) and xs:integer(@id) = $nonSessionOnlyFieldIds)
@@ -34,7 +36,8 @@
       or (not(qfj:boolean-param($excludeSession)) and not(qfj:boolean-param($generateOnlySession)))
     ]">
       <xsl:variable name="name" as="xs:string" select="qfj:toTitleCase(@name)"/>
-      <xsl:variable name="codeSet" as="element(fixr:codeSet)?" select="key('codeSetByName', @type)[1]"/>
+      <xsl:variable name="codeSet" as="element(fixr:codeSet)?"
+        select="key('codeSetByName', @type)[qfj:is-active(., $version, $extensionPack)][1]"/>
       <xsl:variable name="fixType" as="xs:string" select="if ($codeSet) then string($codeSet/@type) else string(@type)"/>
       <xsl:variable name="baseClass" as="xs:string" select="qfj:fieldBaseClass($fixType, $decimalTypeString)"/>
       <xsl:result-document href="{concat($outputDir, 'quickfix/field/', $name, '.java')}" method="text" encoding="UTF-8">
@@ -52,7 +55,7 @@
         <xsl:text>&#10;public class </xsl:text><xsl:value-of select="$name"/><xsl:text> extends </xsl:text><xsl:value-of select="$baseClass"/><xsl:text> {&#10;</xsl:text>
         <xsl:text>  static final long serialVersionUID = 552892318L;&#10;</xsl:text>
         <xsl:text>&#10;  public static final int FIELD = </xsl:text><xsl:value-of select="@id"/><xsl:text>;&#10;</xsl:text>
-        <xsl:for-each select="$codeSet/fixr:code">
+        <xsl:for-each select="$codeSet/fixr:code[qfj:is-active(., $version, $extensionPack)]">
           <xsl:text>&#10;  public static final </xsl:text>
           <xsl:choose>
             <xsl:when test="$codeSet/@type = 'Boolean'">
