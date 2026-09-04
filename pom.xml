@@ -66,7 +66,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<base.java.version>1.8</base.java.version>
 		<junit.jupiter.version>5.14.4</junit.jupiter.version>
-		<orchestra.repository.version>1.6.8</orchestra.repository.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<saxon.version>11.6</saxon.version>
 		<commons.io.version>2.22.0</commons.io.version>
@@ -103,11 +102,6 @@
 				<groupId>net.sf.saxon</groupId>
 				<artifactId>Saxon-HE</artifactId>
 				<version>${saxon.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.fixprotocol.orchestra</groupId>
-				<artifactId>repository</artifactId>
-				<version>${orchestra.repository.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
