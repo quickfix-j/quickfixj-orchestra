@@ -69,6 +69,7 @@
 		<orchestra.repository.version>1.6.8</orchestra.repository.version>
 		<slf4j.version>2.0.18</slf4j.version>
 		<jaxb.version>2.3.3</jaxb.version>
+		<saxon.version>11.6</saxon.version>
 		<commons.io.version>2.22.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
 		<picocli-version>4.7.7</picocli-version>
@@ -98,6 +99,11 @@
 				<artifactId>junit-vintage-engine</artifactId>
 				<version>${junit.jupiter.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.saxon</groupId>
+				<artifactId>Saxon-HE</artifactId>
+				<version>${saxon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>io.fixprotocol.orchestra</groupId>
