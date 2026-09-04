@@ -68,7 +68,6 @@
 		<junit.jupiter.version>5.14.4</junit.jupiter.version>
 		<orchestra.repository.version>1.6.8</orchestra.repository.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<jaxb.version>2.3.3</jaxb.version>
 		<saxon.version>11.6</saxon.version>
 		<commons.io.version>2.22.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
@@ -119,16 +118,6 @@
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
 				<version>${picocli-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>jakarta.xml.bind</groupId>
-				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>${jaxb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-impl</artifactId>
-				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
