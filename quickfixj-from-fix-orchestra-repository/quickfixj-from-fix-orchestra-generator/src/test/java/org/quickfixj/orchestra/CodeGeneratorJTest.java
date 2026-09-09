@@ -119,7 +119,7 @@ public class CodeGeneratorJTest {
   }
   
   @Test
-  public void testGenerateWithBigDecimal() throws IOException {
+  public void testGenerateWithBigDecimal() throws Exception {
     generator.generate(
         Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
         new File("target/spec/generated-sources/fix50sp2"));
@@ -129,7 +129,7 @@ public class CodeGeneratorJTest {
   }
   
   @Test
-  public void testGenerateWithDouble() throws IOException {
+  public void testGenerateWithDouble() throws Exception {
 	generator.setGenerateBigDecimal(false);
 	generator.generate(
         Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
