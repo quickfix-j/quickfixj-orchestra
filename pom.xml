@@ -66,9 +66,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<base.java.version>1.8</base.java.version>
 		<junit.jupiter.version>5.14.4</junit.jupiter.version>
-		<orchestra.repository.version>1.6.8</orchestra.repository.version>
 		<slf4j.version>2.0.18</slf4j.version>
-		<jaxb.version>2.3.3</jaxb.version>
+		<saxon.version>11.6</saxon.version>
 		<commons.io.version>2.22.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
 		<picocli-version>4.7.7</picocli-version>
@@ -100,9 +99,9 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>io.fixprotocol.orchestra</groupId>
-				<artifactId>repository</artifactId>
-				<version>${orchestra.repository.version}</version>
+				<groupId>net.sf.saxon</groupId>
+				<artifactId>Saxon-HE</artifactId>
+				<version>${saxon.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -113,16 +112,6 @@
 				<groupId>info.picocli</groupId>
 				<artifactId>picocli</artifactId>
 				<version>${picocli-version}</version>
-			</dependency>
-			<dependency>
-				<groupId>jakarta.xml.bind</groupId>
-				<artifactId>jakarta.xml.bind-api</artifactId>
-				<version>${jaxb.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.sun.xml.bind</groupId>
-				<artifactId>jaxb-impl</artifactId>
-				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.maven</groupId>
