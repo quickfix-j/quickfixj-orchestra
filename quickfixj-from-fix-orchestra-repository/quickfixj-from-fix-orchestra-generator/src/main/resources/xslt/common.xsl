@@ -13,6 +13,8 @@
 
   <xsl:variable name="allGroups" as="element(fixr:group)*" select="/fixr:repository/fixr:groups/fixr:group"/>
   <xsl:variable name="allComponents" as="element(fixr:component)*" select="/fixr:repository/fixr:components/fixr:component"/>
+  <xsl:variable name="repositoryVersion" as="xs:string" select="qfj:splitOffVersion(string(/fixr:repository/@version))"/>
+  <xsl:variable name="repositoryExtensionPack" as="xs:string" select="qfj:extractExtensionPack(string(/fixr:repository/@version))"/>
 
   <xsl:function name="qfj:indent" as="xs:string">
     <xsl:param name="level" as="xs:integer"/>
@@ -40,7 +42,10 @@
     <xsl:for-each select="$members">
       <xsl:choose>
         <xsl:when test="self::fixr:fieldRef">
-          <xsl:sequence select="xs:integer(@id)"/>
+          <xsl:variable name="field" select="key('fieldById', @id, root(.))[1]"/>
+          <xsl:if test="$field and qfj:is-active($field, $repositoryVersion, $repositoryExtensionPack)">
+            <xsl:sequence select="xs:integer(@id)"/>
+          </xsl:if>
         </xsl:when>
         <xsl:when test="self::fixr:groupRef">
           <xsl:variable name="group" as="element(fixr:group)?" select="key('groupById', @id, root(.))[1]"/>
@@ -85,6 +90,17 @@
   <xsl:function name="qfj:extractServicePack" as="xs:string">
     <xsl:param name="version" as="xs:string"/>
     <xsl:sequence select="if (matches($version, 'SP[0-9]+')) then replace($version, '^.*SP([0-9]+).*$', '$1') else '0'"/>
+  </xsl:function>
+
+  <xsl:function name="qfj:is-active" as="xs:boolean">
+    <xsl:param name="element" as="element()"/>
+    <xsl:param name="version" as="xs:string"/>
+    <xsl:param name="extensionPack" as="xs:string"/>
+    <xsl:sequence select="
+      not($version = 'FIX.Latest' and $element/@deprecated and
+        (not($element/@deprecated = 'FIX.Latest') or
+         not($element/@deprecatedEP castable as xs:integer) or
+         xs:integer($element/@deprecatedEP) le xs:integer($extensionPack)))"/>
   </xsl:function>
 
   <xsl:function name="qfj:precedeCapsWithUnderscore" as="xs:string">
