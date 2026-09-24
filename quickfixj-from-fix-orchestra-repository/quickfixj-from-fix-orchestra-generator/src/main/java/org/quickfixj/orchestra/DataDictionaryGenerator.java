@@ -71,7 +71,7 @@ import io.fixprotocol._2020.orchestra.repository.Repository;
  */
 public class DataDictionaryGenerator {
 
-  private static class UnmarshalResult {
+  static class UnmarshalResult {
     private final Repository repository;
     private final Node repositoryNode;
 
@@ -205,13 +205,27 @@ public class DataDictionaryGenerator {
     }
   }
 
+  /**
+   * Creates the {@link Writer} used to write a generated data-dictionary file.
+   *
+   * <p>Subclasses may override this method to wrap the writer (e.g. in a
+   * {@link java.io.BufferedWriter}) for improved I/O performance.
+   *
+   * @param file the output file to write to
+   * @return a writer for the file
+   * @throws IOException if the writer cannot be opened
+   */
+  protected Writer createWriter(File file) throws IOException {
+    return new FileWriter(file);
+  }
+
   private void writeFile(Repository repository, File outputDir, Set<Integer> requiredGroupIds,
         final List<ComponentType> componentList, final List<GroupType> groupList, final List<FieldType> fieldList,
         String major, String minor, String fileName, String extensionPack, String servicePack) throws IOException {
       final String versionPath = fileName.replaceAll("[\\.]", "");
       final File file = getSpecFilePath(outputDir, versionPath, ".xml");
       outputDir.mkdirs();
-      try (FileWriter writer = new FileWriter(file)) {
+      try (Writer writer = createWriter(file)) {
         writeElement(writer, "fix", 0, false, new KeyValue<>("major", major),
             new KeyValue<>("minor", minor), new KeyValue<>("servicepack", servicePack),
             new KeyValue<>("extensionpack", extensionPack));
@@ -285,7 +299,7 @@ public class DataDictionaryGenerator {
     return new File(outputDir, sb.toString());
   }
 
-  private Set<Integer> getRequiredGroups(Node repositoryNode) throws XPathExpressionException {
+  protected Set<Integer> getRequiredGroups(Node repositoryNode) throws XPathExpressionException {
     Set<Integer> groupIds = new HashSet<>();
 
     XPath xPath = XPathFactory.newInstance().newXPath();
@@ -345,7 +359,7 @@ public class DataDictionaryGenerator {
     return sb.toString().toUpperCase();
   }
 
-  private UnmarshalResult unmarshal(InputStream inputFile)
+  protected UnmarshalResult unmarshal(InputStream inputFile)
       throws JAXBException, ParserConfigurationException, SAXException, IOException {
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
     builderFactory.setNamespaceAware(true);
