@@ -66,12 +66,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<base.java.version>1.8</base.java.version>
 		<junit.jupiter.version>5.14.4</junit.jupiter.version>
-		<slf4j.version>2.0.19</slf4j.version>
+		<slf4j.version>2.0.20</slf4j.version>
 		<saxon.version>11.6</saxon.version>
 		<commons.io.version>2.22.0</commons.io.version>
 		<orchestra.file>OrchestraFIXLatest.xml</orchestra.file>
 		<picocli-version>4.7.7</picocli-version>
-		<maven.version>3.9.16</maven.version>
+		<maven.version>3.10.0</maven.version>
 		<maven-javadoc-plugin-version>3.12.0</maven-javadoc-plugin-version>
 		<maven-gpg-plugin-version>3.2.8</maven-gpg-plugin-version>
 		<maven-source-plugin-version>3.4.0</maven-source-plugin-version>
@@ -80,7 +80,7 @@
 		<maven-resources-plugin-version>3.5.0</maven-resources-plugin-version>
 		<maven-jar-plugin-version>3.5.1</maven-jar-plugin-version>
 		<maven-compiler-plugin-version>3.16.0</maven-compiler-plugin-version>
-		<maven-plugin-api.version>3.9.16</maven-plugin-api.version>
+		<maven-plugin-api.version>3.10.0</maven-plugin-api.version>
 		<maven-plugin-annotations.version>3.16.0</maven-plugin-annotations.version>
 		<maven-plugin-testing-harness.version>3.5.1</maven-plugin-testing-harness.version>
 	</properties>
@@ -221,7 +221,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.21.0</version>
+				<version>2.22.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
