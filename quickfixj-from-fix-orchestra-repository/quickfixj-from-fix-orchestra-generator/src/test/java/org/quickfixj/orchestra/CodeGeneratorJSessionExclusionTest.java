@@ -92,16 +92,12 @@ class CodeGeneratorJSessionExclusionTest {
 			,"RefSeqNum.java"
 			,"RefTagID.java"
 			,"ResetSeqNumFlag.java"
-			,"SecureData.java"
-			,"SecureDataLen.java"
 			,"SenderCompID.java"
 			,"SenderLocationID.java"
 			,"SenderSubID.java"
 			,"SendingTime.java"
 			,"SessionRejectReason.java"
 			,"SessionStatus.java"
-			,"Signature.java"
-			,"SignatureLength.java"
 			,"TargetCompID.java"
 			,"TargetLocationID.java"
 			,"TargetSubID.java"
@@ -161,7 +157,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void testDefault() throws IOException {
+	void testDefault() throws Exception {
 	    generator.generate(
 	            Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
 	            withSessionInclusionLatest);
@@ -172,7 +168,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void assertOnlySessionGenerated() throws IOException {
+	void assertOnlySessionGenerated() throws Exception {
 		generator.setGenerateOnlySession(true);
 		generator.generate(
 	            Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
@@ -183,7 +179,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void testMutuallyExclusiveOptions() throws IOException {
+	void testMutuallyExclusiveOptions() throws Exception {
 		assertThrows(IllegalArgumentException.class, () -> {
 			generator.setExcludeSession(true);
 	    });
@@ -194,7 +190,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void testMutuallyExclusiveSessionOptions() throws IOException {
+	void testMutuallyExclusiveSessionOptions() throws Exception {
 		assertThrows(IllegalArgumentException.class, () -> {
 			generator.setExcludeSession(true);
 			generator.setGenerateOnlySession(true);
@@ -206,13 +202,13 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void testMutuallyCompatibleOptions() throws IOException {
+	void testMutuallyCompatibleOptions() throws Exception {
 		generator.setGenerateFixt11Package(false);
 		generator.setExcludeSession(true);
 	}
 	
 	@Test
-	void testDefaultOverridenForSessionExclusion() throws IOException {
+	void testDefaultOverridenForSessionExclusion() throws Exception {
 		generator.setGenerateFixt11Package(false);
 		generator.setExcludeSession(true);
 		generator.generate(
@@ -222,7 +218,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 
 	@Test
-	void testFixT11Generation() throws IOException {
+	void testFixT11Generation() throws Exception {
 		generator.setGenerateFixt11Package(true);
 		generator.generate(
 	            Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
@@ -231,7 +227,7 @@ class CodeGeneratorJSessionExclusionTest {
 	}
 	
 	@Test
-	void testFixT11PackageNotGenerated() throws IOException {
+	void testFixT11PackageNotGenerated() throws Exception {
 		generator.setGenerateFixt11Package(false);
 		generator.generate(
 	            Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
