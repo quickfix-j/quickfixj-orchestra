@@ -14,6 +14,7 @@
  */
 package org.quickfixj.orchestra;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -42,6 +43,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
@@ -101,6 +103,40 @@ public class DataDictionaryGenerator {
 
   private static final int SPACES_PER_LEVEL = 2;
 
+  private static final JAXBContext JAXB_CONTEXT;
+  private static final XPathExpression REQUIRED_GROUP_REF_XPATH;
+
+  static {
+    try {
+      JAXB_CONTEXT = JAXBContext.newInstance(Repository.class);
+      XPath xPath = XPathFactory.newInstance().newXPath();
+      xPath.setNamespaceContext(new NamespaceContext() {
+        @Override
+        public String getNamespaceURI(String prefix) {
+          switch (prefix) {
+            case "fixr":
+              return "http://fixprotocol.io/2020/orchestra/repository";
+            default:
+              return null;
+          }
+        }
+
+        @Override
+        public String getPrefix(String namespaceURI) {
+          return null;
+        }
+
+        @Override
+        public Iterator<String> getPrefixes(String namespaceURI) {
+          return null;
+        }
+      });
+      REQUIRED_GROUP_REF_XPATH = xPath.compile("//fixr:groupRef[@presence='required']");
+    } catch (JAXBException | XPathExpressionException e) {
+      throw new ExceptionInInitializerError(e);
+    }
+  }
+
   /**
    * Runs a DataDictionaryGenerator with command line arguments
    * <p>
@@ -145,9 +181,8 @@ public class DataDictionaryGenerator {
   public void generate(Repository repository, File outputDir)
       throws IOException, XPathExpressionException {
     try {
-      JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
       DOMResult domResult = new DOMResult();
-      TransformerFactory.newInstance().newTransformer().transform(new JAXBSource(jaxbContext, repository), domResult);
+      TransformerFactory.newInstance().newTransformer().transform(new JAXBSource(JAXB_CONTEXT, repository), domResult);
       Node repositoryNode = domResult.getNode();
       generate(repository, outputDir, repositoryNode);
     } catch (JAXBException | TransformerException e) {
@@ -211,7 +246,7 @@ public class DataDictionaryGenerator {
       final String versionPath = fileName.replaceAll("[\\.]", "");
       final File file = getSpecFilePath(outputDir, versionPath, ".xml");
       outputDir.mkdirs();
-      try (FileWriter writer = new FileWriter(file)) {
+      try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
         writeElement(writer, "fix", 0, false, new KeyValue<>("major", major),
             new KeyValue<>("minor", minor), new KeyValue<>("servicepack", servicePack),
             new KeyValue<>("extensionpack", extensionPack));
@@ -287,34 +322,7 @@ public class DataDictionaryGenerator {
 
   private Set<Integer> getRequiredGroups(Node repositoryNode) throws XPathExpressionException {
     Set<Integer> groupIds = new HashSet<>();
-
-    XPath xPath = XPathFactory.newInstance().newXPath();
-    xPath.setNamespaceContext(new NamespaceContext() {
-
-      @Override
-      public String getNamespaceURI(String prefix) {
-        switch (prefix) {
-          case "fixr":
-            return "http://fixprotocol.io/2020/orchestra/repository";
-          default:
-            return null;
-        }
-      }
-
-      @Override
-      public String getPrefix(String namespaceURI) {
-        return null;
-      }
-
-      @Override
-      public Iterator<String> getPrefixes(String namespaceURI) {
-        return null;
-      }
-
-    });
-    String expression = "//fixr:groupRef[@presence='required']";
-    NodeList nodeList = (NodeList) xPath.compile(expression)
-        .evaluate(repositoryNode, XPathConstants.NODESET);
+    NodeList nodeList = (NodeList) REQUIRED_GROUP_REF_XPATH.evaluate(repositoryNode, XPathConstants.NODESET);
     for (int i = 0; i < nodeList.getLength(); i++) {
       if (nodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
         Element element = (Element) nodeList.item(i);
@@ -351,8 +359,7 @@ public class DataDictionaryGenerator {
     builderFactory.setNamespaceAware(true);
     DocumentBuilder builder = builderFactory.newDocumentBuilder();
     Document document = builder.parse(inputFile);
-    final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
-    final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+    final Unmarshaller jaxbUnmarshaller = JAXB_CONTEXT.createUnmarshaller();
     Repository repository = (Repository) jaxbUnmarshaller.unmarshal(document);
     return new UnmarshalResult(repository, document.getDocumentElement());
   }

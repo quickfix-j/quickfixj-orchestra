@@ -42,7 +42,23 @@ public class CodeGeneratorUtil {
 		return ctor.toString().toCharArray();
 	}
 
+	private static final String[] INDENTS;
+
+	static {
+		INDENTS = new String[5];
+		for (int i = 0; i < INDENTS.length; i++) {
+			INDENTS[i] = buildIndent(i);
+		}
+	}
+
 	public static String indent(int level) {
+		if (level >= 0 && level < INDENTS.length) {
+			return INDENTS[level];
+		}
+		return buildIndent(level);
+	}
+
+	private static String buildIndent(int level) {
 		final char[] chars = new char[level * CodeGeneratorJ.SPACES_PER_LEVEL];
 		Arrays.fill(chars, ' ');
 		return new String(chars);
