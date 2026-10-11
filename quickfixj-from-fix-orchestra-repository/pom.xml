@@ -22,6 +22,7 @@
 		<module>quickfixj-from-fix-orchestra-generator</module>
 		<module>quickfixj-from-fix-orchestra-code-generator-maven-plugin</module>
 		<module>quickfixj-from-fix-orchestra-dictionary-generator-maven-plugin</module>
+		<module>quickfixj-from-fix-orchestra-benchmarks</module>
 	</modules>
 
 </project>
