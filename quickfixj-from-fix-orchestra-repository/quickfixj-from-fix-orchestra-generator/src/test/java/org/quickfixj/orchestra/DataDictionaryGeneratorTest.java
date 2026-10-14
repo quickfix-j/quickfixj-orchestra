@@ -2,6 +2,7 @@ package org.quickfixj.orchestra;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -55,6 +56,23 @@ public class DataDictionaryGeneratorTest {
     assertFalse(dictionary.contains("enum=\"6\" description=\"BENCHMARK\""));
     assertFalse(dictionary.contains("enum=\"L\" description=\"LAST_PEG\""));
     assertFalse(dictionary.contains("number=\"575\" name=\"OddLot\""));
+  }
+
+  @Test
+  public void testGenerateFIXLatestIncludesApplicationAndSessionMessages() throws Exception {
+    File outputDir = new File("target/spec");
+    generator.generate(
+        Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
+        outputDir);
+
+    String dictionary = new String(Files.readAllBytes(outputDir.toPath().resolve("FIXLatest.xml")),
+        java.nio.charset.StandardCharsets.UTF_8);
+    assertEquals(164, dictionary.split("<message name=\"", -1).length - 1);
+    assertTrue(dictionary.contains("<message name=\"News\" msgtype=\"B\" msgcat=\"app\">"));
+    assertTrue(dictionary.contains(
+        "<message name=\"TradeCaptureReportRequest\" msgtype=\"AD\" msgcat=\"app\">"));
+    assertTrue(dictionary.contains("<message name=\"Logon\" msgtype=\"A\" msgcat=\"admin\">"));
+    assertTrue(dictionary.contains("<message name=\"Logout\" msgtype=\"5\" msgcat=\"admin\">"));
   }
 
   @Test
