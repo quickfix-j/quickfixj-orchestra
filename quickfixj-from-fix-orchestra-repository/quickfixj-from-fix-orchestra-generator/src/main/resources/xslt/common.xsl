@@ -15,6 +15,7 @@
   <xsl:variable name="allComponents" as="element(fixr:component)*" select="/fixr:repository/fixr:components/fixr:component"/>
   <xsl:variable name="repositoryVersion" as="xs:string" select="qfj:splitOffVersion(string(/fixr:repository/@version))"/>
   <xsl:variable name="repositoryExtensionPack" as="xs:string" select="qfj:extractExtensionPack(string(/fixr:repository/@version))"/>
+  <xsl:param name="generateDeprecated" as="xs:string" select="'true'"/>
 
   <xsl:function name="qfj:indent" as="xs:string">
     <xsl:param name="level" as="xs:integer"/>
@@ -97,7 +98,7 @@
     <xsl:param name="version" as="xs:string"/>
     <xsl:param name="extensionPack" as="xs:string"/>
     <xsl:sequence select="
-      not($version = 'FIX.Latest' and $element/@deprecated and
+      lower-case($generateDeprecated) = 'true' or not($version = 'FIX.Latest' and $element/@deprecated and
         (not($element/@deprecated = 'FIX.Latest') or
          not($element/@deprecatedEP castable as xs:integer) or
          xs:integer($element/@deprecatedEP) le xs:integer($extensionPack)))"/>

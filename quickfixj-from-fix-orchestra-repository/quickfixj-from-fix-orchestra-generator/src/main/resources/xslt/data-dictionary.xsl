@@ -33,7 +33,7 @@
       <xsl:text>  &lt;header/>&#10;</xsl:text>
       <xsl:text>  &lt;trailer/>&#10;</xsl:text>
       <xsl:text>  &lt;messages&gt;&#10;</xsl:text>
-      <xsl:for-each select="/fixr:repository/fixr:messages/fixr:message">
+      <xsl:for-each select="/fixr:repository/fixr:messages/fixr:message[qfj:is-active(., $fileName, $extensionPack)]">
         <xsl:variable name="isAdminMessage" as="xs:boolean" select="@category = 'Session'"/>
         <xsl:text>    &lt;message name="</xsl:text><xsl:value-of select="@name"/><xsl:text>" msgtype="</xsl:text><xsl:value-of select="@msgType"/><xsl:text>" msgcat="</xsl:text><xsl:value-of select="if ($isAdminMessage) then 'admin' else 'app'"/><xsl:text>"&gt;&#10;</xsl:text>
         <xsl:call-template name="dd-write-members">

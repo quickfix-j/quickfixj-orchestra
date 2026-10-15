@@ -51,6 +51,9 @@ public class CodeGeneratorMojo extends AbstractMojo {
 	 */
 	@Parameter(property = "excludeSession", required = false)
 	boolean excludeSession = false;
+
+	@Parameter(property = "excludeDeprecated", required = false)
+	boolean excludeDeprecated = false;
 	
 	public void execute() throws MojoExecutionException {
         if ( orchestration.exists() && orchestration.isFile() ) {
@@ -74,6 +77,7 @@ public class CodeGeneratorMojo extends AbstractMojo {
 		generator.setGenerateOnlySession(generateOnlySession);
 		generator.setGenerateFixt11Package(generateFixt11Package);
 		generator.setExcludeSession(excludeSession);
+		generator.setGenerateDeprecated(!excludeDeprecated);
 
 	    try (FileInputStream inputFile = new FileInputStream(orchestration)) {
 			generator.generate(inputFile, outputDirectory);

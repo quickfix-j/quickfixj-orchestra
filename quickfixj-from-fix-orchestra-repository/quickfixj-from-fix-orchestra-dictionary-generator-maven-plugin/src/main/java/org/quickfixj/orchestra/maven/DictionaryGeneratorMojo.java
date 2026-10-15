@@ -28,6 +28,9 @@ public class DictionaryGeneratorMojo extends AbstractMojo {
 	@Parameter(defaultValue = "${project.build.directory}/generated-resources", property = "outputDirectory", required = true)
 	protected File outputDirectory;
 
+	@Parameter(property = "excludeDeprecated", required = false)
+	protected boolean excludeDeprecated = false;
+
 	public void execute() throws MojoExecutionException {
         if ( orchestration.exists() && orchestration.isFile() ) {
             this.getLog().info(new StringBuilder("Orchestration : ").append(orchestration.getAbsolutePath()).toString());
@@ -47,7 +50,7 @@ public class DictionaryGeneratorMojo extends AbstractMojo {
 
 		final DataDictionaryGenerator generator = new DataDictionaryGenerator();
 	    try (FileInputStream inputFile = new FileInputStream(orchestration)) {
-			generator.generate(inputFile, outputDirectory);
+			generator.generate(inputFile, outputDirectory, !excludeDeprecated);
 		} catch (IOException | TransformerException e) {
 			throw new MojoExecutionException(e.toString());
 		}

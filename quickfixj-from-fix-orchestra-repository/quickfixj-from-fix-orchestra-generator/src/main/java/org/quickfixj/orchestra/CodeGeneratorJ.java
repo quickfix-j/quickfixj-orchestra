@@ -49,6 +49,7 @@ public class CodeGeneratorJ {
 	private boolean isGenerateOnlySession = false;
 	private boolean isExcludeSession = false;
 	private boolean isGenerateFixt11Package = true;
+	private boolean isGenerateDeprecated = true;
 
 	/**
 	 * Runs a CodeGeneratorJ with command line arguments.
@@ -62,6 +63,7 @@ public class CodeGeneratorJ {
 		try (FileInputStream inputStream = new FileInputStream(new File(options.orchestraFileName))) {
 			generator.setGenerateBigDecimal(!options.isDisableBigDecimal);
 			generator.setGenerateOnlySession(options.isGenerateOnlySession);
+			generator.setGenerateDeprecated(!options.isExcludeDeprecated);
 			if (generator.isExcludeSession && generator.isGenerateFixt11Package) {
 				logger.error("Options {} == {} and {} == {} are mutually exclusive.",
 						Options.EXCLUDE_SESSION, options.isExcludeSession,
@@ -80,6 +82,7 @@ public class CodeGeneratorJ {
 	static class Options {
 		static final String GENERATE_FIXT11_PACKAGE = "--generateFixt11Package";
 		static final String EXCLUDE_SESSION = "--excludeSession";
+		static final String EXCLUDE_DEPRECATED = "--excludeDeprecated";
 
 		@Option(names = { "-o", "--output-dir" }, defaultValue = "target/generated-sources",
 				paramLabel = "OUTPUT_DIRECTORY", description = "The output directory, Default : ${DEFAULT-VALUE}")
@@ -100,6 +103,10 @@ public class CodeGeneratorJ {
 		@Option(names = { EXCLUDE_SESSION }, defaultValue = "false", fallbackValue = "true",
 				paramLabel = "EXCLUDE_SESSION", description ="Excludes Session Category Messages, Components and Groups exclusive to Session Layer and Fields used by Session Layer from the generated code, Default : ${DEFAULT-VALUE}")
 		boolean isExcludeSession = false;
+
+		@Option(names = { EXCLUDE_DEPRECATED }, defaultValue = "false", fallbackValue = "true",
+				paramLabel = "EXCLUDE_DEPRECATED", description = "Do not generate deprecated fields, messages, code sets, or values, Default : ${DEFAULT-VALUE}")
+		boolean isExcludeDeprecated = false;
 
 		@Option(names = { GENERATE_FIXT11_PACKAGE }, defaultValue = "true", fallbackValue = "true",
 				paramLabel = "GENERATE_FIXT_PACKAGE", description ="Generates FIXT11 Package : ${DEFAULT-VALUE}")
@@ -134,11 +141,16 @@ public class CodeGeneratorJ {
 		params.put("generateFixt11Package", Boolean.toString(isGenerateFixt11Package));
 		params.put("excludeSession", Boolean.toString(isExcludeSession));
 		params.put("generateOnlySession", Boolean.toString(isGenerateOnlySession));
+		params.put("generateDeprecated", Boolean.toString(isGenerateDeprecated));
 		return params;
 	}
 
 	public void setGenerateBigDecimal(boolean isGenerateBigDecimal) {
 		this.isGenerateBigDecimal = isGenerateBigDecimal;
+	}
+
+	public void setGenerateDeprecated(boolean generateDeprecated) {
+		this.isGenerateDeprecated = generateDeprecated;
 	}
 
 	public boolean isExcludeSession() {

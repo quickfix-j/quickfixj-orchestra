@@ -23,8 +23,8 @@
   <xsl:variable name="messagePackage" as="xs:string" select="concat('quickfix.', $versionPath)"/>
   <xsl:variable name="fixt11MessagePackage" as="xs:string" select="'quickfix.fixt11'"/>
   <xsl:variable name="fixt11ComponentPackage" as="xs:string" select="'quickfix.fixt11.component'"/>
-  <xsl:variable name="sessionMessages" as="element(fixr:message)*" select="/fixr:repository/fixr:messages/fixr:message[@category = 'Session']"/>
-  <xsl:variable name="nonSessionMessages" as="element(fixr:message)*" select="/fixr:repository/fixr:messages/fixr:message[not(@category = 'Session')]"/>
+  <xsl:variable name="sessionMessages" as="element(fixr:message)*" select="/fixr:repository/fixr:messages/fixr:message[@category = 'Session' and qfj:is-active(., $versionBase, qfj:extractExtensionPack($version))]"/>
+  <xsl:variable name="nonSessionMessages" as="element(fixr:message)*" select="/fixr:repository/fixr:messages/fixr:message[not(@category = 'Session') and qfj:is-active(., $versionBase, qfj:extractExtensionPack($version))]"/>
   <xsl:variable name="sessionGroupIds" as="xs:integer*"
     select="distinct-values(for $message in $sessionMessages return qfj:collectGroupIds($message/fixr:structure/*[self::fixr:fieldRef or self::fixr:componentRef or self::fixr:groupRef], true()))"/>
   <xsl:variable name="nonSessionGroupIds" as="xs:integer*"

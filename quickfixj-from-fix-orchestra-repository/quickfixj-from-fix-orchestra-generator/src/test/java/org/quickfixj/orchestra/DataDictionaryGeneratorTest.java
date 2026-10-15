@@ -43,7 +43,7 @@ public class DataDictionaryGeneratorTest {
   public void testGenerateFIXLatest() throws Exception {
     File outputDir = new File("target/spec");
     generator.generate(
-        Thread.currentThread().getContextClassLoader().getResource("trade-latest.xml").openStream(),
+        Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
         outputDir);
     try (BufferedReader brTest = new BufferedReader(
         new FileReader(outputDir.getAbsolutePath().concat(File.separator + "FIXLatest.xml")))) {
@@ -51,6 +51,19 @@ public class DataDictionaryGeneratorTest {
       assertEquals("<fix major=\"Latest\" minor=\"0\" servicepack=\"0\" extensionpack=\"269\">",
           firstLine);
     }
+    String dictionary = new String(Files.readAllBytes(outputDir.toPath().resolve("FIXLatest.xml")),
+        java.nio.charset.StandardCharsets.UTF_8);
+    assertTrue(dictionary.contains("enum=\"6\" description=\"BENCHMARK\""));
+    assertTrue(dictionary.contains("enum=\"L\" description=\"LAST_PEG\""));
+    assertTrue(dictionary.contains("number=\"575\" name=\"OddLot\""));
+  }
+
+  @Test
+  public void testGenerateFIXLatestCanExcludeDeprecatedValues() throws Exception {
+    File outputDir = new File("target/spec");
+    generator.generate(
+        Thread.currentThread().getContextClassLoader().getResource("OrchestraFIXLatest.xml").openStream(),
+        outputDir, false);
     String dictionary = new String(Files.readAllBytes(outputDir.toPath().resolve("FIXLatest.xml")),
         java.nio.charset.StandardCharsets.UTF_8);
     assertFalse(dictionary.contains("enum=\"6\" description=\"BENCHMARK\""));

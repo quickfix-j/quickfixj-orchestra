@@ -39,7 +39,8 @@ public class DataDictionaryGenerator {
    *
    * @param args command line arguments. The first argument is the name of a FIX Orchestra file. An
    *        optional second argument is the target directory for generated files. It defaults to
-   *        directory "spec".
+   * directory "spec". Pass {@code --excludeDeprecated} as a third argument to omit
+   * deprecated fields, messages, code sets, and values.
    */
   public static void main(String[] args) {
     final DataDictionaryGenerator generator = new DataDictionaryGenerator();
@@ -52,7 +53,8 @@ public class DataDictionaryGenerator {
         outputDir = new File("spec");
       }
       try (FileInputStream inputStream = new FileInputStream(inputFile)) {
-        generator.generate(inputStream, outputDir);
+        generator.generate(inputStream, outputDir,
+            args.length < 3 || !"--excludeDeprecated".equals(args[2]));
       } catch (Exception e) {
         e.printStackTrace(System.err);
       }
@@ -71,11 +73,18 @@ public class DataDictionaryGenerator {
    */
   public void generate(InputStream inputFile, File outputDir)
       throws IOException, TransformerException {
+    generate(inputFile, outputDir, true);
+  }
+
+  public void generate(InputStream inputFile, File outputDir, boolean generateDeprecated)
+      throws IOException, TransformerException {
     File tempInput = File.createTempFile("orchestra-dict-input-", ".xml");
     try {
       Files.copy(inputFile, tempInput.toPath(), StandardCopyOption.REPLACE_EXISTING);
       outputDir.mkdirs();
-      new OrchestraTransformer().transform(tempInput, "xslt/data-dictionary.xsl", outputDir, null);
+      java.util.Map<String, String> params = new java.util.HashMap<>();
+      params.put("generateDeprecated", Boolean.toString(generateDeprecated));
+      new OrchestraTransformer().transform(tempInput, "xslt/data-dictionary.xsl", outputDir, params);
     } finally {
       tempInput.delete();
     }
@@ -116,6 +125,7 @@ public class DataDictionaryGenerator {
   }
 
   private void usage() {
-    System.out.format("Usage: java %s <input-file> <output-dir>", this.getClass().getName());
+    System.out.format("Usage: java %s <input-file> <output-dir> [--excludeDeprecated]",
+        this.getClass().getName());
   }
 }

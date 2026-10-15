@@ -79,6 +79,14 @@ public class CodeGeneratorJTest {
 	  assertEquals(input, options.orchestraFileName);
 	  assertEquals(outputDir, options.outputDir);
 	  assertFalse(options.isDisableBigDecimal);
+	  assertFalse(options.isExcludeDeprecated);
+  }
+
+  @Test
+  void testExcludeDeprecatedOption() {
+    CodeGeneratorJ.Options options = new CodeGeneratorJ.Options();
+    new CommandLine(options).parseArgs("--orchestra-file", "target/input", "--excludeDeprecated");
+    assertTrue(options.isExcludeDeprecated);
   }
   
   @Test 
@@ -102,7 +110,7 @@ public class CodeGeneratorJTest {
   }
 
   @Test
-  void testFIXLatestDoesNotGenerateDeprecatedValues(@org.junit.jupiter.api.io.TempDir Path tempDir)
+  void testFIXLatestGeneratesDeprecatedValuesByDefault(@org.junit.jupiter.api.io.TempDir Path tempDir)
       throws Exception {
     try (InputStream orchestra = getClass().getResourceAsStream("/OrchestraFIXLatest.xml")) {
       generator.setGenerateFixt11Package(false);
@@ -118,8 +126,30 @@ public class CodeGeneratorJTest {
           }
         })
         .collect(Collectors.joining("\n"));
-    assertFalse(generated.contains("public static final int BENCHMARK = 6;"));
-    assertFalse(generated.contains("public static final char LAST_PEG = 'L';"));
+    assertTrue(generated.contains("public static final String BENCHMARK = \"6\";"));
+    assertTrue(generated.contains("public static final String LAST_PEG = \"L\";"));
+  }
+
+  @Test
+  void testFIXLatestCanExcludeDeprecatedValues(@org.junit.jupiter.api.io.TempDir Path tempDir)
+      throws Exception {
+    try (InputStream orchestra = getClass().getResourceAsStream("/OrchestraFIXLatest.xml")) {
+      generator.setGenerateFixt11Package(false);
+      generator.setGenerateDeprecated(false);
+      generator.generate(orchestra, tempDir.toFile());
+    }
+    String generated = Files.walk(tempDir)
+        .filter(Files::isRegularFile)
+        .map(path -> {
+          try {
+            return new String(Files.readAllBytes(path), java.nio.charset.StandardCharsets.UTF_8);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.joining("\n"));
+    assertFalse(generated.contains("public static final String BENCHMARK = \"6\";"));
+    assertFalse(generated.contains("public static final String LAST_PEG = \"L\";"));
   }
 
   @Test 
