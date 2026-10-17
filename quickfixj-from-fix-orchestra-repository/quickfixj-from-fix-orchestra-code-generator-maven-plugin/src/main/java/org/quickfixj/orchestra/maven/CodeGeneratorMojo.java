@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import javax.xml.transform.TransformerException;
+
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
@@ -49,6 +51,9 @@ public class CodeGeneratorMojo extends AbstractMojo {
 	 */
 	@Parameter(property = "excludeSession", required = false)
 	boolean excludeSession = false;
+
+	@Parameter(property = "excludeDeprecated", required = false)
+	boolean excludeDeprecated = false;
 	
 	public void execute() throws MojoExecutionException {
         if ( orchestration.exists() && orchestration.isFile() ) {
@@ -72,10 +77,11 @@ public class CodeGeneratorMojo extends AbstractMojo {
 		generator.setGenerateOnlySession(generateOnlySession);
 		generator.setGenerateFixt11Package(generateFixt11Package);
 		generator.setExcludeSession(excludeSession);
+		generator.setGenerateDeprecated(!excludeDeprecated);
 
 	    try (FileInputStream inputFile = new FileInputStream(orchestration)) {
 			generator.generate(inputFile, outputDirectory);
-		} catch (IOException e) {
+		} catch (IOException | TransformerException e) {
 			throw new MojoExecutionException(e.toString());
 		}
 	}

@@ -2,6 +2,10 @@ package org.quickfixj.orchestra;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -75,6 +79,14 @@ public class CodeGeneratorJTest {
 	  assertEquals(input, options.orchestraFileName);
 	  assertEquals(outputDir, options.outputDir);
 	  assertFalse(options.isDisableBigDecimal);
+	  assertFalse(options.isExcludeDeprecated);
+  }
+
+  @Test
+  void testExcludeDeprecatedOption() {
+    CodeGeneratorJ.Options options = new CodeGeneratorJ.Options();
+    new CommandLine(options).parseArgs("--orchestra-file", "target/input", "--excludeDeprecated");
+    assertTrue(options.isExcludeDeprecated);
   }
   
   @Test 
@@ -95,6 +107,49 @@ public class CodeGeneratorJTest {
 	  String[] args = {"--output-dir", outputDir,};
 	  CodeGeneratorJ.Options options = new CodeGeneratorJ.Options();
 	  assertThrows(MissingParameterException.class, () -> new CommandLine(options).parseArgs(args) );
+  }
+
+  @Test
+  void testFIXLatestGeneratesDeprecatedValuesByDefault(@org.junit.jupiter.api.io.TempDir Path tempDir)
+      throws Exception {
+    try (InputStream orchestra = getClass().getResourceAsStream("/OrchestraFIXLatest.xml")) {
+      generator.setGenerateFixt11Package(false);
+      generator.generate(orchestra, tempDir.toFile());
+    }
+    String generated = Files.walk(tempDir)
+        .filter(Files::isRegularFile)
+        .map(path -> {
+          try {
+            return new String(Files.readAllBytes(path), java.nio.charset.StandardCharsets.UTF_8);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.joining("\n"));
+    assertTrue(generated.contains("public static final String BENCHMARK = \"6\";"));
+    assertTrue(generated.contains("public static final String LAST_PEG = \"L\";"));
+  }
+
+  @Test
+  void testFIXLatestCanExcludeDeprecatedValues(@org.junit.jupiter.api.io.TempDir Path tempDir)
+      throws Exception {
+    try (InputStream orchestra = getClass().getResourceAsStream("/OrchestraFIXLatest.xml")) {
+      generator.setGenerateFixt11Package(false);
+      generator.setGenerateDeprecated(false);
+      generator.generate(orchestra, tempDir.toFile());
+    }
+    String generated = Files.walk(tempDir)
+        .filter(Files::isRegularFile)
+        .map(path -> {
+          try {
+            return new String(Files.readAllBytes(path), java.nio.charset.StandardCharsets.UTF_8);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        })
+        .collect(Collectors.joining("\n"));
+    assertFalse(generated.contains("public static final String BENCHMARK = \"6\";"));
+    assertFalse(generated.contains("public static final String LAST_PEG = \"L\";"));
   }
 
   @Test 
@@ -119,7 +174,7 @@ public class CodeGeneratorJTest {
   }
   
   @Test
-  public void testGenerateWithBigDecimal() throws IOException {
+  public void testGenerateWithBigDecimal() throws Exception {
     generator.generate(
         Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
         new File("target/spec/generated-sources/fix50sp2"));
@@ -129,7 +184,7 @@ public class CodeGeneratorJTest {
   }
   
   @Test
-  public void testGenerateWithDouble() throws IOException {
+  public void testGenerateWithDouble() throws Exception {
 	generator.setGenerateBigDecimal(false);
 	generator.generate(
         Thread.currentThread().getContextClassLoader().getResource("trade.xml").openStream(),
@@ -139,4 +194,3 @@ public class CodeGeneratorJTest {
             new File("target/spec/generated-sources/withDouble/latest"));
   }
 }
-
