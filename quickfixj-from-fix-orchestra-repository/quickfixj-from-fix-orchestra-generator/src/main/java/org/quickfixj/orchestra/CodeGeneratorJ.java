@@ -165,7 +165,7 @@ public class CodeGeneratorJ {
 
 	private String decimalTypeString = DECIMAL_FIELD;
 
-	private Repository repository;
+	protected Repository repository;
 	
 	protected void initialise(InputStream inputFile) throws JAXBException {
 		this.repository = unmarshal(inputFile);
