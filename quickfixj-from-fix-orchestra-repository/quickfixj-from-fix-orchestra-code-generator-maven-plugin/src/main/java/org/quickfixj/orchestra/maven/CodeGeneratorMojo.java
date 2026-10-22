@@ -45,12 +45,22 @@ public class CodeGeneratorMojo extends AbstractMojo {
 	boolean  generateFixt11Package  = true;
 
 	/**
+	 * Skips code generation, e.g. when the generated sources are known to be up to date
+	 */
+	@Parameter(property = "quickfixj.orchestra.codegenerator.skip", defaultValue = "false")
+	boolean skip = false;
+
+	/**
 	 * Determines if FIX Session Layer is excluded from Code Generation
 	 */
 	@Parameter(property = "excludeSession", required = false)
 	boolean excludeSession = false;
 	
 	public void execute() throws MojoExecutionException {
+		if (skip) {
+			this.getLog().info(new StringBuilder("Skipping code generation for ").append(orchestration).toString());
+			return;
+		}
         if ( orchestration.exists() && orchestration.isFile() ) {
             this.getLog().info(new StringBuilder("Orchestration : ").append(orchestration.getAbsolutePath()).toString());
 		} else {
