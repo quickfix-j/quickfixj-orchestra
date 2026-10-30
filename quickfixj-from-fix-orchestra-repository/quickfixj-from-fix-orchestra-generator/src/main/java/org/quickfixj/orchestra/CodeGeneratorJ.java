@@ -14,6 +14,7 @@
  */
 package org.quickfixj.orchestra;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
@@ -166,6 +167,16 @@ public class CodeGeneratorJ {
 	private String decimalTypeString = DECIMAL_FIELD;
 
 	private Repository repository;
+
+	private static final JAXBContext JAXB_CONTEXT;
+
+	static {
+		try {
+			JAXB_CONTEXT = JAXBContext.newInstance(Repository.class);
+		} catch (JAXBException e) {
+			throw new ExceptionInInitializerError(e);
+		}
+	}
 	
 	protected void initialise(InputStream inputFile) throws JAXBException {
 		this.repository = unmarshal(inputFile);
@@ -414,7 +425,7 @@ public class CodeGeneratorJ {
 			              				  Map<Integer, FieldType> fields) throws IOException {
 		final String name = toTitleCase(componentType.getName());
 		final File file = getClassFilePath(outputDir, packageName, name);
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, packageName);
 			writeImport(writer, "quickfix.FieldNotFound");
@@ -448,7 +459,7 @@ public class CodeGeneratorJ {
 		final String name = toTitleCase(fieldType.getName());
 		final File file = getClassFilePath(outputDir, packageName, name);
 		logger.debug("Generating field file: {}", file.getName());
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, packageName);
 			final String type = fieldType.getType();
@@ -490,7 +501,7 @@ public class CodeGeneratorJ {
 			            	   Map<Integer, FieldType> fields) throws IOException {
 		final String name = toTitleCase(groupType.getName());
 		final File file = getClassFilePath(outputDir, packageName, name);
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, packageName);
 			writeImport(writer, "quickfix.FieldNotFound");
@@ -540,7 +551,7 @@ public class CodeGeneratorJ {
 		}
 		final File file = getClassFilePath(outputDir, messagePackage, messageClassname);
 		logger.debug("Generating message file: {}", file.getName());
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
 			writeImport(writer, "quickfix.FieldNotFound");
@@ -566,14 +577,14 @@ public class CodeGeneratorJ {
 		}
 	}
 
-	private static FileWriter writeMessageArgConstructor(FileWriter writer, String clazzName, List<FieldType> mandatoryFields) throws IOException {
+	private static Writer writeMessageArgConstructor(Writer writer, String clazzName, List<FieldType> mandatoryFields) throws IOException {
 		writer.write(CodeGeneratorUtil.formatConstructorWithArguments(clazzName, mandatoryFields));
 		return writer;
 	}
 
 	private static void generateMessageBaseClass(File outputDir, String version, String messagePackage) throws IOException {
 		final File file = getClassFilePath(outputDir, messagePackage, "Message");
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
 			writeImport(writer, "quickfix.field.*");
@@ -591,7 +602,7 @@ public class CodeGeneratorJ {
 	private static void generateMessageCracker(File outputDir, String messagePackage, List<MessageType> messageList)
 			throws IOException {
 		final File file = getClassFilePath(outputDir, messagePackage, "MessageCracker");
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
 			writeImport(writer, "quickfix.*");
@@ -665,7 +676,7 @@ public class CodeGeneratorJ {
 			                           Map<Integer, FieldType> fields)
 			throws IOException {
 		final File file = getClassFilePath(outputDir, messagePackage, "MessageFactory");
-		try (FileWriter writer = new FileWriter(file)) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
 			writeFileHeader(writer);
 			writePackage(writer, messagePackage);
 			writeImport(writer, "quickfix.Message");
@@ -784,8 +795,7 @@ public class CodeGeneratorJ {
 	}
 
 	private static Repository unmarshal(InputStream inputFile) throws JAXBException {
-		final JAXBContext jaxbContext = JAXBContext.newInstance(Repository.class);
-		final Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		final Unmarshaller jaxbUnmarshaller = JAXB_CONTEXT.createUnmarshaller();
 		return (Repository) jaxbUnmarshaller.unmarshal(inputFile);
 	}
 
@@ -1006,7 +1016,7 @@ public class CodeGeneratorJ {
 		return writer;
 	}
 
-	private static void writeGroupInnerClass(FileWriter writer, 
+	private static void writeGroupInnerClass(Writer writer, 
 											 GroupType groupType, 
 											 String packageName,
 											 String componentPackage, 
@@ -1046,7 +1056,7 @@ public class CodeGeneratorJ {
 		return writer;
 	}
 
-	private static void writeMemberAccessors(FileWriter writer, 
+	private static void writeMemberAccessors(Writer writer, 
 									  List<Object> members, 
 									  String packageName,
 									  String componentPackage, 
@@ -1110,12 +1120,12 @@ public class CodeGeneratorJ {
 		return writer;
 	}
 
-    private static void writeHeaderMethods(FileWriter writer) throws IOException {
+    private static void writeHeaderMethods(Writer writer) throws IOException {
         writeHeaderFactoryMethod(writer);
         writeHeaderGetter(writer);
     }
 
-    private static void writeHeaderFactoryMethod(FileWriter writer) throws IOException {
+    private static void writeHeaderFactoryMethod(Writer writer) throws IOException {
         writer.write(String.format("%n"));
         writer.write(String.format("%s@Override%n", CodeGeneratorUtil.indent(1)));
         writer.write(String.format("%sprotected Header newHeader() {%n", CodeGeneratorUtil.indent(1)));
@@ -1123,7 +1133,7 @@ public class CodeGeneratorJ {
         writer.write(String.format("%s}%n", CodeGeneratorUtil.indent(1)));
     }
 
-    private static void writeHeaderGetter(FileWriter writer) throws IOException {
+    private static void writeHeaderGetter(Writer writer) throws IOException {
         writer.write(String.format("%n"));
         writer.write(String.format("%s@Override%n", CodeGeneratorUtil.indent(1)));
         writer.write(String.format("%spublic Header getHeader() {%n", CodeGeneratorUtil.indent(1)));
