@@ -33,6 +33,8 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Applies an XSLT stylesheet (loaded from the classpath) to a FIX Orchestra input file,
@@ -45,6 +47,9 @@ import java.util.Map;
 public class OrchestraTransformer {
 
     private static final Logger logger = LoggerFactory.getLogger(OrchestraTransformer.class);
+
+    private static final ConcurrentMap<String, Templates> templatesByStylesheet =
+            new ConcurrentHashMap<>();
 
     /**
      * Transforms the given input file using the named XSLT stylesheet resource.
@@ -59,27 +64,7 @@ public class OrchestraTransformer {
     public void transform(File inputFile, String stylesheetResource, File outputDir,
             Map<String, String> params) throws TransformerException {
 
-        TransformerFactory factory = TransformerFactory.newInstance(
-                "net.sf.saxon.TransformerFactoryImpl",
-                OrchestraTransformer.class.getClassLoader());
-
-        // Configure a result-document resolver that creates parent directories automatically.
-        factory.setAttribute(
-                "http://saxon.sf.net/feature/outputURIResolver",
-                new MkDirOutputURIResolver());
-
-        InputStream xslStream = OrchestraTransformer.class.getClassLoader()
-                .getResourceAsStream(stylesheetResource);
-        if (xslStream == null) {
-            throw new TransformerException(
-                    "Stylesheet not found on classpath: " + stylesheetResource);
-        }
-
-        // Provide a system-ID so that xsl:include/xsl:import resolves relative to the resource.
-        String systemId = OrchestraTransformer.class.getClassLoader()
-                .getResource(stylesheetResource).toString();
-        Templates templates = factory.newTemplates(new StreamSource(xslStream, systemId));
-        Transformer transformer = templates.newTransformer();
+        Transformer transformer = getTemplates(stylesheetResource).newTransformer();
 
         // Always pass the output directory as a file: URI ending with "/".
         String outputDirUri = outputDir.toURI().toString();
@@ -100,6 +85,40 @@ public class OrchestraTransformer {
 
         logger.debug("Transforming {} with {} → {}", inputFile, stylesheetResource, outputDir);
         transformer.transform(source, discardResult);
+    }
+
+    private Templates getTemplates(String stylesheetResource) throws TransformerException {
+        Templates templates = templatesByStylesheet.get(stylesheetResource);
+        if (templates != null) {
+            return templates;
+        }
+
+        TransformerFactory factory = TransformerFactory.newInstance(
+                "net.sf.saxon.TransformerFactoryImpl",
+                OrchestraTransformer.class.getClassLoader());
+        factory.setAttribute(
+                "http://saxon.sf.net/feature/outputURIResolver",
+                new MkDirOutputURIResolver());
+
+        java.net.URL stylesheetUrl = OrchestraTransformer.class.getClassLoader()
+                .getResource(stylesheetResource);
+        if (stylesheetUrl == null) {
+            throw new TransformerException(
+                    "Stylesheet not found on classpath: " + stylesheetResource);
+        }
+
+        Templates compiledTemplates;
+        try (InputStream xslStream = stylesheetUrl.openStream()) {
+            compiledTemplates = factory.newTemplates(
+                    new StreamSource(xslStream, stylesheetUrl.toString()));
+        } catch (IOException e) {
+            throw new TransformerException(
+                    "Cannot read stylesheet from classpath: " + stylesheetResource, e);
+        }
+
+        Templates existingTemplates = templatesByStylesheet.putIfAbsent(
+                stylesheetResource, compiledTemplates);
+        return existingTemplates != null ? existingTemplates : compiledTemplates;
     }
 
     // -------------------------------------------------------------------------
