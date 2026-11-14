@@ -2,6 +2,8 @@ package org.quickfixj.orchestra;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -115,7 +117,10 @@ public class CodeGeneratorJTest {
 	  String outputDir = "target/generated-sources";
 	  String[] args = {"--output-dir", outputDir,};
 	  CodeGeneratorJ.Options options = new CodeGeneratorJ.Options();
-	  new CommandLine(options).execute(args);
+	  StringWriter errorOutput = new StringWriter();
+	  CommandLine commandLine = new CommandLine(options).setErr(new PrintWriter(errorOutput));
+	  assertEquals(2, commandLine.execute(args));
+	  assertTrue(errorOutput.toString().contains("Missing required option: '--orchestra-file=ORCHESTRA_FILE'"));
   }
   
   @Test
