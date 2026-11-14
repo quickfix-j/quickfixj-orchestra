@@ -1,6 +1,7 @@
 package org.quickfixj.orchestra.maven;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -86,6 +87,19 @@ public class CodeGeneratorMojoTest {
 		codeGeneratorMojo.outputDirectory = this.notPreviouslyExistantOutputDirectory;
 		codeGeneratorMojo.execute();
 		assertTrue(this.notPreviouslyExistantOutputDirectory.exists());
+	}
+
+	@WithoutMojo
+	@Test
+	public void skipDoesNotGenerate() throws MojoExecutionException {
+		File skippedOutputDirectory = new File(this.buildDirectoryName + "/skipped-generated-sources");
+		assertFalse(skippedOutputDirectory.exists());
+		CodeGeneratorMojo codeGeneratorMojo = new CodeGeneratorMojo();
+		codeGeneratorMojo.orchestration = new File("notlikely/nope");
+		codeGeneratorMojo.outputDirectory = skippedOutputDirectory;
+		codeGeneratorMojo.skip = true;
+		codeGeneratorMojo.execute();
+		assertFalse(skippedOutputDirectory.exists());
 	}
 
 	@Test
