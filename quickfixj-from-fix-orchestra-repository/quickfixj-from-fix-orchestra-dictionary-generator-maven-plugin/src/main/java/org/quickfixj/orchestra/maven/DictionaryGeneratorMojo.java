@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
+import javax.xml.transform.TransformerException;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -14,7 +12,6 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.quickfixj.orchestra.DataDictionaryGenerator;
-import org.xml.sax.SAXException;
 
 @Mojo(name = "dictionaryGeneration", defaultPhase = LifecyclePhase.PROCESS_SOURCES)
 public class DictionaryGeneratorMojo extends AbstractMojo {
@@ -30,6 +27,9 @@ public class DictionaryGeneratorMojo extends AbstractMojo {
 	 */
 	@Parameter(defaultValue = "${project.build.directory}/generated-resources", property = "outputDirectory", required = true)
 	protected File outputDirectory;
+
+	@Parameter(property = "excludeDeprecated", required = false)
+	protected boolean excludeDeprecated = false;
 
 	public void execute() throws MojoExecutionException {
         if ( orchestration.exists() && orchestration.isFile() ) {
@@ -50,8 +50,8 @@ public class DictionaryGeneratorMojo extends AbstractMojo {
 
 		final DataDictionaryGenerator generator = new DataDictionaryGenerator();
 	    try (FileInputStream inputFile = new FileInputStream(orchestration)) {
-			generator.generate(inputFile, outputDirectory);
-		} catch (XPathExpressionException | JAXBException | IOException | ParserConfigurationException | SAXException  e) {
+			generator.generate(inputFile, outputDirectory, !excludeDeprecated);
+		} catch (IOException | TransformerException e) {
 			throw new MojoExecutionException(e.toString());
 		}
 	}
