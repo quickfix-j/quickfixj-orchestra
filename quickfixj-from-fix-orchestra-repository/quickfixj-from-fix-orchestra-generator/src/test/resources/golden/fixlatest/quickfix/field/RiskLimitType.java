@@ -31,9 +31,9 @@ public class RiskLimitType extends IntField {
 
   public static final int MAX_NOTIONAL_ORDER_SIZE = 11;
 
-  public static final int DV01PV01LIMIT = 12;
+  public static final int DV01_PV01_LIMIT = 12;
 
-  public static final int CS01LIMIT = 13;
+  public static final int CS01_LIMIT = 13;
 
   public static final int VOLUME_LIMIT_PER_TIME_PERIOD = 14;
 

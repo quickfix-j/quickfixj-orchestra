@@ -11,11 +11,11 @@ public class EntitlementAttribDatatype extends IntField {
 
   public static final int PATTERN = 32;
 
-  public static final int RESERVED100PLUS = 33;
+  public static final int RESERVED100_PLUS = 33;
 
-  public static final int RESERVED1000PLUS = 34;
+  public static final int RESERVED1000_PLUS = 34;
 
-  public static final int RESERVED4000PLUS = 35;
+  public static final int RESERVED4000_PLUS = 35;
 
   public static final int STRING = 14;
 

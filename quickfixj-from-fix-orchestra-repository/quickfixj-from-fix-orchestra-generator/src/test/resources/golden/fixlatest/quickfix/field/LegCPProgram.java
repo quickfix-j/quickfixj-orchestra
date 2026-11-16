@@ -13,7 +13,7 @@ public class LegCPProgram extends IntField {
 
   public static final int PROGRAM3A2 = 3;
 
-  public static final int PROGRAM3A3AND3C7 = 4;
+  public static final int PROGRAM3A3_AND3C7 = 4;
 
   public static final int PROGRAM3A4 = 5;
 

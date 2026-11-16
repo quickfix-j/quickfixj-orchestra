@@ -59,19 +59,41 @@ public class CodeGeneratorJ {
 	public static void main(String[] args) {
 		final CodeGeneratorJ generator = new CodeGeneratorJ();
 		Options options = new Options();
-		new CommandLine(options).execute(args);
+		CommandLine commandLine = new CommandLine(options);
+		try {
+			commandLine.parseArgs(args);
+		} catch (CommandLine.ParameterException e) {
+			System.err.println(e.getMessage());
+			commandLine.usage(System.err);
+			System.exit(FAIL_STATUS);
+		}
+		if (commandLine.isUsageHelpRequested()) {
+			commandLine.usage(System.out);
+			return;
+		}
+		if (commandLine.isVersionHelpRequested()) {
+			commandLine.printVersionHelp(System.out);
+			return;
+		}
+		if (options.isExcludeSession && options.isGenerateFixt11Package) {
+			logger.error("Options {} == {} and {} == {} are mutually exclusive.",
+					Options.EXCLUDE_SESSION, options.isExcludeSession,
+							Options.GENERATE_FIXT11_PACKAGE, options.isGenerateFixt11Package);
+			System.exit(FAIL_STATUS);
+		}
+		if (options.isExcludeSession && options.isGenerateOnlySession) {
+			logger.error("Options {} == {} and {} == {} are mutually exclusive.",
+					Options.EXCLUDE_SESSION, options.isExcludeSession,
+							Options.GENERATE_ONLY_SESSION, options.isGenerateOnlySession);
+			System.exit(FAIL_STATUS);
+		}
 		try (FileInputStream inputStream = new FileInputStream(new File(options.orchestraFileName))) {
 			generator.setGenerateBigDecimal(!options.isDisableBigDecimal);
-			generator.setGenerateOnlySession(options.isGenerateOnlySession);
 			generator.setGenerateDeprecated(!options.isExcludeDeprecated);
-			if (generator.isExcludeSession && generator.isGenerateFixt11Package) {
-				logger.error("Options {} == {} and {} == {} are mutually exclusive.",
-						Options.EXCLUDE_SESSION, options.isExcludeSession,
-								Options.GENERATE_FIXT11_PACKAGE, options.isGenerateFixt11Package);
-				System.exit(FAIL_STATUS);
-			}
-			generator.setExcludeSession(options.isExcludeSession);
+			// the setters reject conflicting combinations, so disable FIXT11/session-only before excluding session
 			generator.setGenerateFixt11Package(options.isGenerateFixt11Package);
+			generator.setGenerateOnlySession(options.isGenerateOnlySession);
+			generator.setExcludeSession(options.isExcludeSession);
             generator.generate(inputStream, new File(options.outputDir));
 		} catch (Exception e) {
 			logger.error("Code generation failed", e);
@@ -83,6 +105,7 @@ public class CodeGeneratorJ {
 		static final String GENERATE_FIXT11_PACKAGE = "--generateFixt11Package";
 		static final String EXCLUDE_SESSION = "--excludeSession";
 		static final String EXCLUDE_DEPRECATED = "--excludeDeprecated";
+		static final String GENERATE_ONLY_SESSION = "--generateOnlySession";
 
 		@Option(names = { "-o", "--output-dir" }, defaultValue = "target/generated-sources",
 				paramLabel = "OUTPUT_DIRECTORY", description = "The output directory, Default : ${DEFAULT-VALUE}")
@@ -96,7 +119,7 @@ public class CodeGeneratorJ {
 				paramLabel = "DISABLE_BIG_DECIMAL", description = "Disable the use of Big Decimal for Decimal Fields, Default : ${DEFAULT-VALUE}")
 		boolean isDisableBigDecimal = true;
 
-		@Option(names = { "--generateOnlySession" }, defaultValue = "false", fallbackValue = "true",
+		@Option(names = { GENERATE_ONLY_SESSION },defaultValue = "false", fallbackValue = "true",
 				paramLabel = "GENERATE_ONLY_SESSION", description ="Generates Only Session Classes and dependencies : ${DEFAULT-VALUE}")
 		boolean isGenerateOnlySession = false;
 

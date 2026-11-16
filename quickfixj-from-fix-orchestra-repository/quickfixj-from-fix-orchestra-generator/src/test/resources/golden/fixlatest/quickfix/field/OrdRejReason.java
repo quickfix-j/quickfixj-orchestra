@@ -61,9 +61,9 @@ public class OrdRejReason extends IntField {
 
   public static final int EXCEEDED_MAX_NOTIONAL_ORDER_AMT = 27;
 
-  public static final int EXCEEDED_DV01PV01LIMIT = 28;
+  public static final int EXCEEDED_DV01_PV01_LIMIT = 28;
 
-  public static final int EXCEEDED_CS01LIMIT = 29;
+  public static final int EXCEEDED_CS01_LIMIT = 29;
 
   public static final int OTHER = 99;
 

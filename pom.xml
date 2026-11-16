@@ -11,10 +11,6 @@
 	<description>Parent project for FIX Orchestra / QuickFIX integration</description>
 	<url>https://github.com/quickfix-j/quickfixj-orchestra</url>
 	<inceptionYear>2020</inceptionYear>
-	<prerequisites>
-		<!-- supports toolchain configuration -->
-		<maven>3.5.0</maven>
-	</prerequisites>
 	<organization>
 		<name>QuickFIX/J Organisation</name>
 		<url>http://www.quickfixj.org</url>
@@ -76,7 +72,7 @@
 		<maven-gpg-plugin-version>3.2.8</maven-gpg-plugin-version>
 		<maven-source-plugin-version>3.4.0</maven-source-plugin-version>
 		<nexus-staging-maven-plugin-version>1.7.0</nexus-staging-maven-plugin-version>
-		<maven-surefire-plugin-version>3.6.0</maven-surefire-plugin-version>
+		<maven-surefire-plugin-version>3.6.1</maven-surefire-plugin-version>
 		<maven-resources-plugin-version>3.5.0</maven-resources-plugin-version>
 		<maven-jar-plugin-version>3.5.1</maven-jar-plugin-version>
 		<maven-compiler-plugin-version>3.16.0</maven-compiler-plugin-version>
@@ -155,26 +151,6 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- Use toolchains to select the compilers -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-toolchains-plugin</artifactId>
-					<version>3.3.0</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>toolchain</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<toolchains>
-							<jdk>
-								<version>${base.java.version}</version>
-							</jdk>
-						</toolchains>
-					</configuration>
-				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
@@ -221,7 +197,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>versions-maven-plugin</artifactId>
-				<version>2.22.0</version>
+				<version>2.25.1</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
