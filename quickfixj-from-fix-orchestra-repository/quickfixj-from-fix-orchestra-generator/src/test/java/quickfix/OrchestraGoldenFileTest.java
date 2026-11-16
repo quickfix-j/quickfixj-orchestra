@@ -26,15 +26,12 @@ import org.quickfixj.orchestra.CodeGeneratorJ;
  * {@code .java} file byte-for-byte against the committed golden files stored in
  * {@code src/test/resources/golden/fixlatest}.
  *
- * <p>The test fixture is the full {@code OrchestraFIXLatest.xml} taken from the
- * {@code io.fixprotocol.orchestrations:fix-standard} artifact at the version declared
- * in the parent POM, built with the {@code full-fix-latest} Maven profile.
+ * <p>The test fixture is a committed copy of the full {@code OrchestraFIXLatest.xml},
+ * originally taken from the {@code io.fixprotocol.orchestrations:fix-standard} artifact.
  *
- * <p>If the generator output must intentionally change, regenerate the golden files by
- * running the orchestra code generator directly against the same XML fixture and committing
- * the updated golden files together with the generator changes. See
- * {@code quickfixj-messages/quickfixj-messages-fixlatest/src/test/resources/golden/README.md}
- * for the golden-file workflow.
+ * <p>If the generator output must intentionally change, regenerate the golden files from
+ * this test's output and commit them together with the generator changes. See
+ * {@code src/test/resources/golden/README.md} for the golden-file workflow.
  */
 public class OrchestraGoldenFileTest {
 
