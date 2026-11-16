@@ -11,10 +11,6 @@
 	<description>Parent project for FIX Orchestra / QuickFIX integration</description>
 	<url>https://github.com/quickfix-j/quickfixj-orchestra</url>
 	<inceptionYear>2020</inceptionYear>
-	<prerequisites>
-		<!-- supports toolchain configuration -->
-		<maven>3.5.0</maven>
-	</prerequisites>
 	<organization>
 		<name>QuickFIX/J Organisation</name>
 		<url>http://www.quickfixj.org</url>
