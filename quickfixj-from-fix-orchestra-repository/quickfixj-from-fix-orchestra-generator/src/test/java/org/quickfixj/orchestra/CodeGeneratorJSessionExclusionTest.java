@@ -296,9 +296,9 @@ class CodeGeneratorJSessionExclusionTest {
 	    for (int i =0; i< foundFiles.length; i++) {
 	    	found.add(foundFiles[i].getName());
 	    }
-	    found.stream().forEach(f -> {System.out.printf("Found File %s%n", f);});
+//	    found.stream().forEach(f -> {System.out.printf("Found File %s%n", f);});
 	    found.removeAll(sessionFieldClasses);
-	    found.stream().forEach(f -> {System.out.printf("Superset %s%n", f);});
+//	    found.stream().forEach(f -> {System.out.printf("Superset %s%n", f);});
 
 	    assertEquals(sessionFieldClasses.size() + fieldClassesCommonToSessionAndNonSession.size(), foundFiles.length);
 	    assertEquals(sessionFieldClasses.size() + fieldClassesCommonToSessionAndNonSession.size(), foundFiles.length );
