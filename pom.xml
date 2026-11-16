@@ -151,26 +151,6 @@
 	<build>
 		<pluginManagement>
 			<plugins>
-				<!-- Use toolchains to select the compilers -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-toolchains-plugin</artifactId>
-					<version>3.3.0</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>toolchain</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<toolchains>
-							<jdk>
-								<version>${base.java.version}</version>
-							</jdk>
-						</toolchains>
-					</configuration>
-				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
