@@ -33,9 +33,9 @@ public class QuoteRequestRejectReason extends IntField {
 
   public static final int EXCEEDED_MAX_NOTIONAL_ORDER_AMT = 13;
 
-  public static final int EXCEEDED_DV01PV01LIMIT = 14;
+  public static final int EXCEEDED_DV01_PV01_LIMIT = 14;
 
-  public static final int EXCEEDED_CS01LIMIT = 15;
+  public static final int EXCEEDED_CS01_LIMIT = 15;
 
   public static final int OTHER = 99;
 

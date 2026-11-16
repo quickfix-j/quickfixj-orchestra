@@ -19,9 +19,9 @@ public class TradeCondition extends StringField {
 
   public static final String INTRADAY_TRADE_DETAIL = "F";
 
-  public static final String RULE127TRADE = "G";
+  public static final String RULE127_TRADE = "G";
 
-  public static final String RULE155TRADE = "H";
+  public static final String RULE155_TRADE = "H";
 
   public static final String SOLD_LAST = "I";
 
