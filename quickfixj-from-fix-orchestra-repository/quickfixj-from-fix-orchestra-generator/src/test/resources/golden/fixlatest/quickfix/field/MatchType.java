@@ -35,29 +35,29 @@ public class MatchType extends StringField {
 
   public static final String ACTDEFAULT_AFTER_M2 = "M5";
 
-  public static final String ACTM6MATCH = "M6";
+  public static final String ACTM6_MATCH = "M6";
 
-  public static final String EXACT_MATCH_PLUS4BADGES_EXEC_TIME = "A1";
+  public static final String EXACT_MATCH_PLUS4_BADGES_EXEC_TIME = "A1";
 
-  public static final String EXACT_MATCH_PLUS4BADGES = "A2";
+  public static final String EXACT_MATCH_PLUS4_BADGES = "A2";
 
-  public static final String EXACT_MATCH_PLUS2BADGES_EXEC_TIME = "A3";
+  public static final String EXACT_MATCH_PLUS2_BADGES_EXEC_TIME = "A3";
 
-  public static final String EXACT_MATCH_PLUS2BADGES = "A4";
+  public static final String EXACT_MATCH_PLUS2_BADGES = "A4";
 
   public static final String EXACT_MATCH_PLUS_EXEC_TIME = "A5";
 
   public static final String STAMPED_ADVISORIES_OR_SPECIALIST_ACCEPTS = "AQ";
 
-  public static final String A1EXACT_MATCH_SUMMARIZED_QUANTITY = "S1";
+  public static final String A1_EXACT_MATCH_SUMMARIZED_QUANTITY = "S1";
 
-  public static final String A2EXACT_MATCH_SUMMARIZED_QUANTITY = "S2";
+  public static final String A2_EXACT_MATCH_SUMMARIZED_QUANTITY = "S2";
 
-  public static final String A3EXACT_MATCH_SUMMARIZED_QUANTITY = "S3";
+  public static final String A3_EXACT_MATCH_SUMMARIZED_QUANTITY = "S3";
 
-  public static final String A4EXACT_MATCH_SUMMARIZED_QUANTITY = "S4";
+  public static final String A4_EXACT_MATCH_SUMMARIZED_QUANTITY = "S4";
 
-  public static final String A5EXACT_MATCH_SUMMARIZED_QUANTITY = "S5";
+  public static final String A5_EXACT_MATCH_SUMMARIZED_QUANTITY = "S5";
 
   public static final String EXACT_MATCH_MINUS_BADGES_TIMES = "M1";
 

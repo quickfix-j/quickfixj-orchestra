@@ -27,11 +27,11 @@ public class ClearingFeeIndicator extends StringField {
 
   public static final String FULL_AND_ASSOCIATE_MEMBER = "F";
 
-  public static final String FIRMS106HAND106J = "H";
+  public static final String FIRMS106_HAND106_J = "H";
 
   public static final String GIM = "I";
 
-  public static final String LESSEE106FEMPLOYEES = "L";
+  public static final String LESSEE106_FEMPLOYEES = "L";
 
   public static final String ALL_OTHER_OWNERSHIP_TYPES = "M";
 

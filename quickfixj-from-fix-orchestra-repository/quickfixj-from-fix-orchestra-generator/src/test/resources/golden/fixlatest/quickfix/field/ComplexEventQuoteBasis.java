@@ -7,9 +7,9 @@ public class ComplexEventQuoteBasis extends IntField {
 
   public static final int FIELD = 2126;
 
-  public static final int CURRENCY1PER_CURRENCY2 = 0;
+  public static final int CURRENCY1_PER_CURRENCY2 = 0;
 
-  public static final int CURRENCY2PER_CURRENCY1 = 1;
+  public static final int CURRENCY2_PER_CURRENCY1 = 1;
 
   public ComplexEventQuoteBasis() {
     super(2126);
