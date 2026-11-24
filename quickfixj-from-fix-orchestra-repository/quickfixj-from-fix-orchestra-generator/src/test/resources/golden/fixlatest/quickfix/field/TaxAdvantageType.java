@@ -47,7 +47,7 @@ public class TaxAdvantageType extends IntField {
 
   public static final int PROFIT_SHARING_PLAN = 19;
 
-  public static final int US401K = 20;
+  public static final int US401_K = 20;
 
   public static final int SELF_DIRECTED_IRA = 21;
 
