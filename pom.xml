@@ -21,22 +21,6 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	<developers>
-		<developer>
-			<name>Don Mendelson</name>
-			<email>donmendelson@silver-flash.net</email>
-			<organization>FIX Trading Community</organization>
-			<organizationUrl>https://www.fixtrading.org/</organizationUrl>
-		</developer>
-	</developers>
-	<contributors>
-		<contributor>
-			<name>David Gibbs</name>
-			<email>david.gibbs@nadex.com</email>
-			<organization>Nadex</organization>
-			<organizationUrl>https://www.nadex.com/</organizationUrl>
-		</contributor>
-	</contributors>
 	<scm>
 		<developerConnection>scm:git:ssh://git@github.com:quickfix-j/quickfixj-orchestra.git</developerConnection>
 		<url>https://github.com/quickfix-j/quickfixj-orchestra</url>
